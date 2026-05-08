@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed — eebecco</title>
+  <meta name="description" content="Your eebecco order has been confirmed. Thank you for your purchase.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="index.html" class="header-logo"><img src="logo.jpg" alt="eebecco" style="height:36px; object-fit:contain;"></a>
+    <nav class="header-nav">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="learn.html">Learn</a>
+      <a href="quality.html">Quality</a>
+      <a href="contact.html">Contact Us</a>
+      <span class="nav-auth-group" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--gold-border);">
+        <a href="login.html" id="nav-login-link" style="font-size:0.75rem; color:var(--antique-gold);">Login</a>
+        <a href="register.html" id="nav-register-link" style="font-size:0.75rem; color:var(--antique-gold);">Register</a>
+        <a href="account.html" id="nav-account-link" class="nav-account-link" style="display:none; font-size:0.75rem; color:var(--warm-cream);">
+          <span class="nav-account-name">Account</span>
+        </a>
+        <a href="#" id="nav-logout-btn" style="display:none; font-size:0.75rem; color:#c94040;">Logout</a>
+      </span>
+    </nav>
+    <div class="header-actions">
+      <button class="cart-btn" aria-label="Cart" onclick="window.location.href='shop.html'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span class="cart-count">0</span>
+      </button>
+      <button class="menu-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem; background:var(--deep-ebony);">
+    <div style="text-align:center; max-width:520px; padding:3rem 2rem; background:var(--card-bg-solid); border:1px solid var(--gold-border); position:relative;">
+      <svg class="corner corner-tl" style="position:absolute; top:12px; left:12px; width:28px; height:28px;" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+      <svg class="corner corner-tr" style="position:absolute; top:12px; right:12px; width:28px; height:28px; transform:scaleX(-1);" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+      <svg class="corner corner-bl" style="position:absolute; bottom:12px; left:12px; width:28px; height:28px; transform:scaleY(-1);" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+      <svg class="corner corner-br" style="position:absolute; bottom:12px; right:12px; width:28px; height:28px; transform:scale(-1);" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+
+      <div style="width:64px; height:64px; border-radius:50%; background:rgba(109,168,94,0.15); border:1px solid rgba(109,168,94,0.4); display:flex; align-items:center; justify-content:center; margin:0 auto 1.75rem;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--matcha-bright)" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+
+      <span style="font-family:var(--font-label); font-size:0.65rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--antique-gold); display:block; margin-bottom:0.75rem;">Order Confirmed</span>
+      <h1 style="font-family:var(--font-display); font-size:clamp(1.8rem,4vw,2.5rem); font-weight:600; color:var(--white); margin-bottom:1rem; line-height:1.15;">Thank you for your order</h1>
+      <p style="font-size:0.92rem; color:rgba(245,236,215,0.55); line-height:1.8; margin-bottom:0.75rem;">We've received your order and will begin preparing it right away. You'll receive a confirmation email shortly with your order details.</p>
+      <p style="font-size:0.85rem; color:rgba(245,236,215,0.4); margin-bottom:2.5rem;">Note: This is a placeholder page. Stripe integration coming soon.</p>
+
+      <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <a href="account.html" class="btn btn-ghost" style="font-size:0.7rem; padding:0.7rem 1.5rem;">View My Account</a>
+        <a href="shop.html" class="btn btn-primary" style="font-size:0.7rem; padding:0.7rem 1.5rem;">Continue Shopping</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { getUser } from './js/auth.js';
+
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount) {
+      const savedCart = JSON.parse(localStorage.getItem('eebecco_cart') || '[]');
+      const total = savedCart.reduce((sum, item) => sum + item.qty, 0);
+      cartCount.textContent = total;
+      cartCount.classList.toggle('visible', total > 0);
+    }
+  </script>
+</body>
+</html>

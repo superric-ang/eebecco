@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — eebecco | Premium Uji Ceremonial Matcha</title>
+  <meta name="description" content="Manage your eebecco account. View purchase history, update mailing list preferences, and sign out.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .account-page { padding-top: var(--header-height); min-height: 100vh; }
+    .account-container { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
+    .account-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+    .account-title-group { }
+    .account-title { font-family: var(--font-display); font-size: clamp(1.8rem,3vw,2.4rem); font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
+    .account-email { font-size: 0.85rem; color: rgba(245,236,215,0.4); }
+    .account-section { margin-top: 2.5rem; }
+    .account-section-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; color: var(--white); margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--gold-border); }
+
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+    .account-card { background: var(--card-bg-solid); border: 1px solid var(--gold-border); padding: 1.5rem; position: relative; }
+    .account-card::before { content: ''; position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px; border: 1px solid rgba(201,147,58,0.1); pointer-events: none; }
+    .account-card-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; color: var(--white); margin-bottom: 1.25rem; }
+    .profile-field { margin-bottom: 0.85rem; }
+    .profile-field-label { font-family: var(--font-label); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--antique-gold); display: block; margin-bottom: 0.3rem; }
+    .profile-field-value { font-size: 0.9rem; color: var(--warm-cream); }
+    .mailing-toggle-row { display: flex; align-items: center; justify-content: space-between; margin-top: 0; }
+    .mailing-status-label { font-size: 0.85rem; color: var(--warm-cream); }
+    .toggle-switch { position: relative; width: 44px; height: 24px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: var(--admin-border); border-radius: 24px; transition: 0.3s; }
+    .toggle-slider::before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: var(--white); border-radius: 50%; transition: 0.3s; }
+    .toggle-switch input:checked + .toggle-slider { background: var(--matcha-bright); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+    .orders-list { display: flex; flex-direction: column; gap: 1.25rem; }
+    .order-card { background: var(--card-bg-solid); border: 1px solid var(--gold-border); padding: 1.5rem; position: relative; transition: border-color 0.2s; }
+    .order-card:hover { border-color: var(--aged-brass); }
+    .order-card::before { content: ''; position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px; border: 1px solid rgba(201,147,58,0.08); pointer-events: none; }
+    .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+    .order-header-left { }
+    .order-id { font-family: var(--font-label); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--antique-gold); }
+    .order-date { font-size: 0.82rem; color: rgba(245,236,215,0.4); margin-top: 0.3rem; }
+    .order-header-right { text-align: right; }
+    .order-status-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+    .order-status-badge.pending { background: rgba(201,147,58,0.15); color: var(--antique-gold); }
+    .order-status-badge.paid { background: rgba(109,168,94,0.15); color: var(--matcha-bright); }
+    .order-status-badge.shipped { background: rgba(74,122,207,0.15); color: #6B8AD4; }
+    .order-status-badge.delivered { background: rgba(76,175,125,0.15); color: #6DA85E; }
+    .order-status-badge.cancelled { background: rgba(201,64,64,0.15); color: #e74c3c; }
+    .order-status-badge.refunded { background: rgba(150,150,150,0.1); color: var(--admin-text-dim); }
+    .order-total { font-family: var(--font-display); font-size: 1.1rem; color: var(--antique-gold); margin-top: 0.3rem; }
+    .order-items-list { font-size: 0.85rem; color: rgba(245,236,215,0.6); margin-bottom: 1rem; line-height: 1.6; }
+    .order-items-list span { color: var(--warm-cream); }
+
+    .order-shipping-info { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(201,147,58,0.15); }
+    .order-shipping-label { font-family: var(--font-label); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 0.5rem; display: block; }
+    .order-shipping-method { font-size: 0.85rem; color: var(--warm-cream); margin-bottom: 0.3rem; }
+    .order-shipping-address { font-size: 0.8rem; color: rgba(245,236,215,0.5); }
+
+    .order-tracking { margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(201,147,58,0.1); border-radius: 8px; }
+    .order-tracking-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .tracking-number { font-family: monospace; font-size: 0.8rem; color: var(--antique-gold); }
+    .tracking-status { font-size: 0.75rem; color: var(--matcha-bright); font-weight: 500; }
+    .tracking-events { font-size: 0.75rem; color: rgba(245,236,215,0.4); line-height: 1.8; }
+    .tracking-events div { padding: 0.25rem 0; }
+
+    .order-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+    .order-action-btn { font-size: 0.72rem; padding: 0.5rem 1rem; border: 1px solid var(--gold-border); background: transparent; color: var(--warm-cream); cursor: pointer; transition: all 0.2s; font-family: var(--font-label); letter-spacing: 0.05em; }
+    .order-action-btn:hover { border-color: var(--antique-gold); background: rgba(201,147,58,0.08); }
+
+    .empty-orders { text-align: center; padding: 3rem; border: 1px solid var(--gold-border); background: var(--card-bg-solid); }
+    .empty-orders-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.3; }
+    .empty-orders-title { font-family: var(--font-display); font-size: 1.1rem; color: var(--white); margin-bottom: 0.5rem; }
+    .empty-orders-desc { font-size: 0.85rem; color: rgba(245,236,215,0.4); margin-bottom: 1.5rem; }
+
+    .loading-state { text-align: center; padding: 3rem 0; color: rgba(245,236,215,0.4); font-family: var(--font-display); font-size: 1rem; }
+    .error-state { text-align: center; padding: 2rem; color: #e74c3c; font-size: 0.85rem; }
+
+    .order-detail-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 2rem; }
+    .order-detail-modal.open { display: flex; }
+    .order-detail-content { background: var(--card-bg-solid); border: 1px solid var(--gold-border); border-radius: 12px; padding: 2rem; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
+    .order-detail-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(245,236,215,0.4); font-size: 1.5rem; cursor: pointer; }
+    .order-detail-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; color: var(--white); margin-bottom: 1.5rem; }
+    .order-detail-section { margin-bottom: 1.5rem; }
+    .order-detail-section-title { font-family: var(--font-label); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--antique-gold); margin-bottom: 0.75rem; display: block; }
+    .order-detail-items { border: 1px solid rgba(201,147,58,0.15); padding: 1rem; }
+    .order-detail-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(201,147,58,0.08); }
+    .order-detail-item:last-child { border-bottom: none; }
+    .order-detail-item-name { color: var(--warm-cream); }
+    .order-detail-item-price { color: var(--antique-gold); font-family: var(--font-display); }
+    .order-detail-totals { margin-top: 1rem; }
+    .order-detail-total-row { display: flex; justify-content: space-between; padding: 0.4rem 0; font-size: 0.85rem; }
+    .order-detail-total-row.grand { font-weight: 600; font-size: 1rem; color: var(--white); border-top: 1px solid var(--gold-border); padding-top: 0.75rem; margin-top: 0.5rem; }
+
+    @media (max-width: 768px) {
+      .profile-grid { grid-template-columns: 1fr; }
+      .account-header-row { flex-direction: column; gap: 1rem; }
+      .order-header { flex-direction: column; gap: 0.75rem; }
+      .order-header-right { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="index.html" class="header-logo"><img src="logo.jpg" alt="eebecco" style="height:36px; object-fit:contain;"></a>
+    <nav class="header-nav">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="learn.html">Learn</a>
+      <a href="quality.html">Quality</a>
+      <a href="contact.html">Contact Us</a>
+      <span class="nav-auth-group" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--gold-border);">
+        <a href="login.html" id="nav-login-link" style="font-size:0.75rem; color:var(--antique-gold);">Login</a>
+        <a href="register.html" id="nav-register-link" style="font-size:0.75rem; color:var(--antique-gold);">Register</a>
+        <a href="account.html" id="nav-account-link" class="nav-account-link" style="display:none; font-size:0.75rem; color:var(--warm-cream);"><span class="nav-account-name">Account</span></a>
+        <a href="#" id="nav-logout-btn" style="display:none; font-size:0.75rem; color:#c94040;">Logout</a>
+      </span>
+    </nav>
+    <div class="header-actions">
+      <button class="cart-btn" aria-label="Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-count">0</span>
+      </button>
+      <button class="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <div id="auth-loading" class="loading-state" style="display:none; min-height:100vh; display:flex; align-items:center; justify-content:center;">
+    <p>Loading...</p>
+  </div>
+
+  <main id="account-content" style="display:none;" class="account-page">
+    <div class="account-container">
+      <div class="account-header-row">
+        <div class="account-title-group">
+          <span style="font-family:var(--font-label); font-size:0.65rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--antique-gold); display:block; margin-bottom:0.5rem;">Account</span>
+          <h1 class="account-title">My Account</h1>
+          <p id="account-email" class="account-email"></p>
+        </div>
+        <button class="btn btn-ghost" id="logout-btn" style="font-size:0.7rem; padding:0.6rem 1.5rem;">Sign Out</button>
+      </div>
+
+      <div class="gold-divider" style="margin:1.5rem 0 2rem;">
+        <div class="gold-divider-line"></div>
+        <div class="gold-divider-ornament">◆</div>
+        <div class="gold-divider-line"></div>
+      </div>
+
+      <div class="account-section">
+        <div class="profile-grid">
+          <div class="account-card">
+            <h2 class="account-card-title">Personal Information</h2>
+            <div id="profile-info">
+              <div class="profile-field">
+                <span class="profile-field-label">Full Name</span>
+                <span id="profile-name" class="profile-field-value">—</span>
+              </div>
+              <div class="profile-field">
+                <span class="profile-field-label">Email</span>
+                <span id="profile-email2" class="profile-field-value">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="account-card">
+            <h2 class="account-card-title">Mailing List</h2>
+            <p style="font-size:0.82rem; color:rgba(245,236,215,0.5); margin-bottom:1.25rem; line-height:1.7;">Receive seasonal harvest updates, brewing guides, and stories from Uji.</p>
+            <div class="mailing-toggle-row">
+              <span class="mailing-status-label" id="mailing-status-label">Loading...</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="mailing-toggle">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="account-section">
+        <h2 class="account-section-title">Purchase History</h2>
+
+        <div id="orders-list">
+          <div id="orders-loading" class="loading-state">Loading orders...</div>
+          <div id="orders-empty" class="empty-orders" style="display:none;">
+            <div class="empty-orders-icon">📦</div>
+            <p class="empty-orders-title">No orders yet</p>
+            <p class="empty-orders-desc">Start exploring our collection of premium matcha.</p>
+            <a href="shop.html" class="btn btn-primary" style="display:inline-flex;">Explore Our Collection</a>
+          </div>
+          <div id="orders-error" class="error-state" style="display:none;">Failed to load orders.</div>
+          <div id="orders-container" class="orders-list"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="order-detail-modal" class="order-detail-modal">
+    <div class="order-detail-content">
+      <button class="order-detail-close" onclick="closeOrderDetail()">&times;</button>
+      <h2 class="order-detail-title" id="order-detail-title">Order Details</h2>
+      <div id="order-detail-body"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="header-logo"><img src="logo.jpg" alt="eebecco" style="height:36px; object-fit:contain;"></a>
+          <p>Stone-ground matcha from the shaded fields of Uji, Kyoto.</p>
+        </div>
+        <div class="footer-col"><h4>Shop</h4><a href="shop.html">All Products</a><a href="quality.html">Quality Standards</a></div>
+        <div class="footer-col"><h4>Connect</h4><a href="contact.html">Contact Us</a></div>
+      </div>
+      <div class="footer-bottom"><span>&copy; 2026 eebecco. All rights reserved.</span></div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script type="module">
+    import { getSession } from './js/auth.js';
+    import { getProfile, logout, getMailingListStatus, toggleMailingList } from './js/account.js';
+    import { getPurchaseHistory, formatOrderDate, formatPrice, getStatusLabel } from './js/account.js';
+    import { fetchTrackingInfo, formatTrackingEvents } from './js/delivery.js';
+
+    const accountContent = document.getElementById('account-content');
+    const authLoading = document.getElementById('auth-loading');
+    const logoutBtn = document.getElementById('logout-btn');
+    const mailingToggle = document.getElementById('mailing-toggle');
+    const mailingStatusLabel = document.getElementById('mailing-status-label');
+    const ordersLoading = document.getElementById('orders-loading');
+    const ordersEmpty = document.getElementById('orders-empty');
+    const ordersError = document.getElementById('orders-error');
+    const ordersContainer = document.getElementById('orders-container');
+    const profileName = document.getElementById('profile-name');
+    const profileEmail = document.getElementById('profile-email');
+    const profileEmail2 = document.getElementById('profile-email2');
+
+    let currentUser = null;
+
+    async function init() {
+      const { data: { session } } = await getSession();
+      currentUser = session?.user || null;
+
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      authLoading.style.display = 'none';
+      accountContent.style.display = 'block';
+
+      await loadProfile();
+      await loadMailingStatus();
+      await loadOrders();
+    }
+
+    async function loadProfile() {
+      try {
+        const profile = await getProfile(currentUser.id);
+        const name = profile?.full_name || currentUser.user_metadata?.full_name || 'Valued Customer';
+        profileName.textContent = name;
+        profileEmail.textContent = currentUser.email;
+        profileEmail2.textContent = currentUser.email;
+      } catch {
+        profileName.textContent = currentUser.user_metadata?.full_name || 'Valued Customer';
+        profileEmail.textContent = currentUser.email;
+        profileEmail2.textContent = currentUser.email;
+      }
+    }
+
+    async function loadMailingStatus() {
+      try {
+        const status = await getMailingListStatus(currentUser.id);
+        mailingToggle.checked = status?.mailing_list_opt_in || false;
+        mailingStatusLabel.textContent = mailingToggle.checked ? 'Subscribed to newsletter' : 'Not subscribed';
+      } catch {
+        mailingStatusLabel.textContent = 'Status unknown';
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const orders = await getPurchaseHistory(currentUser.id);
+        ordersLoading.style.display = 'none';
+
+        if (!orders || orders.length === 0) {
+          ordersEmpty.style.display = 'block';
+          return;
+        }
+
+        ordersContainer.innerHTML = orders.map(order => {
+          const items = order.order_items || [];
+          const itemsDisplay = items.map(item => `<span>${item.quantity}x ${item.product_name}</span>`).join(', ');
+          const statusClass = order.status || 'pending';
+
+          let shippingInfoHtml = '';
+          if (order.shipping_data) {
+            const shipData = typeof order.shipping_data === 'string' ? JSON.parse(order.shipping_data) : order.shipping_data;
+            shippingInfoHtml = `
+              <div class="order-shipping-info">
+                <span class="order-shipping-label">Delivery</span>
+                <div class="order-shipping-method">${shipData.carrier || 'Standard Shipping'} — ${shipData.method || 'N/A'}</div>
+                <div class="order-shipping-address">${shipData.address ? `${shipData.address.line1 || ''}, ${shipData.address.city || ''}, ${shipData.address.country || ''}` : 'N/A'}</div>
+              </div>
+            `;
+          }
+
+          let trackingHtml = '';
+          if (order.tracking_number && order.carrier) {
+            trackingHtml = `
+              <div class="order-tracking" id="tracking-${order.id}">
+                <div class="order-tracking-header">
+                  <span class="tracking-number">${order.tracking_number}</span>
+                  <span class="tracking-status">${order.status === 'delivered' ? 'Delivered' : 'In Transit'}</span>
+                </div>
+                <div class="tracking-events" id="tracking-events-${order.id}">
+                  Loading tracking info...
+                </div>
+              </div>
+            `;
+
+            setTimeout(async () => {
+              const result = await fetchTrackingInfo(order.carrier, order.tracking_number);
+              const eventsEl = document.getElementById(`tracking-events-${order.id}`);
+              if (eventsEl) {
+                if (result.success && result.events && result.events.length > 0) {
+                  eventsEl.innerHTML = formatTrackingEvents(result.events);
+                } else {
+                  eventsEl.innerHTML = 'Tracking information unavailable.';
+                }
+              }
+            }, 500);
+          }
+
+          return `
+            <div class="order-card" data-order-id="${order.id}">
+              <div class="order-header">
+                <div class="order-header-left">
+                  <span class="order-id">Order #${order.id.substring(0, 8).toUpperCase()}</span>
+                  <p class="order-date">${formatOrderDate(order.created_at)}</p>
+                </div>
+                <div class="order-header-right">
+                  <span class="order-status-badge ${statusClass}">${getStatusLabel(order.status)}</span>
+                  <p class="order-total">${formatPrice(order.total_cents)}</p>
+                </div>
+              </div>
+              ${items.length > 0 ? `<div class="order-items-list">${itemsDisplay}</div>` : ''}
+              ${shippingInfoHtml}
+              ${trackingHtml}
+              <div class="order-actions">
+                <button class="order-action-btn" onclick="viewOrderDetail('${order.id}')">View Details</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        ordersLoading.style.display = 'none';
+        ordersError.style.display = 'block';
+      }
+    }
+
+    window.viewOrderDetail = async function(orderId) {
+      const orders = await getPurchaseHistory(currentUser.id);
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      const items = order.order_items || [];
+      const shipData = order.shipping_data ? (typeof order.shipping_data === 'string' ? JSON.parse(order.shipping_data) : order.shipping_data) : {};
+
+      const subtotal = items.reduce((sum, item) => sum + (item.unit_price_cents || 0) * item.quantity, 0);
+      const shippingCost = shipData.cost_cents || 0;
+      const discountCost = order.discount_cents || 0;
+      const total = subtotal + shippingCost - discountCost;
+
+      document.getElementById('order-detail-title').textContent = `Order #${order.id.substring(0, 8).toUpperCase()}`;
+      document.getElementById('order-detail-body').innerHTML = `
+        <div class="order-detail-section">
+          <span class="order-detail-section-title">Order Date</span>
+          <p style="color:var(--warm-cream);">${formatOrderDate(order.created_at)}</p>
+        </div>
+        <div class="order-detail-section">
+          <span class="order-detail-section-title">Status</span>
+          <span class="order-status-badge ${order.status}" style="display:inline-block; padding:0.25rem 0.75rem; border-radius:4px; font-size:0.7rem; font-weight:600;">${getStatusLabel(order.status)}</span>
+        </div>
+        <div class="order-detail-section">
+          <span class="order-detail-section-title">Items</span>
+          <div class="order-detail-items">
+            ${items.map(item => `
+              <div class="order-detail-item">
+                <span class="order-detail-item-name">${item.quantity}x ${item.product_name}</span>
+                <span class="order-detail-item-price">${formatPrice((item.unit_price_cents || 0) * item.quantity)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="order-detail-section">
+          <span class="order-detail-section-title">Delivery</span>
+          <p style="color:var(--warm-cream); font-size:0.85rem;">${shipData.carrier || 'N/A'} — ${shipData.method || 'Standard'}</p>
+          ${order.tracking_number ? `<p style="color:var(--antique-gold); font-size:0.8rem; margin-top:0.4rem;">Tracking: ${order.tracking_number}</p>` : ''}
+          ${shipData.address ? `<p style="color:rgba(245,236,215,0.5); font-size:0.8rem; margin-top:0.4rem;">${shipData.address.line1 || ''}, ${shipData.address.city || ''}, ${shipData.address.postal || ''} ${shipData.address.country || ''}</p>` : ''}
+        </div>
+        <div class="order-detail-section">
+          <div class="order-detail-totals">
+            <div class="order-detail-total-row"><span style="color:rgba(245,236,215,0.5);">Subtotal</span><span style="color:var(--warm-cream);">${formatPrice(subtotal)}</span></div>
+            <div class="order-detail-total-row"><span style="color:rgba(245,236,215,0.5);">Shipping</span><span style="color:var(--warm-cream);">${shippingCost === 0 ? 'FREE' : formatPrice(shippingCost)}</span></div>
+            ${discountCost > 0 ? `<div class="order-detail-total-row" style="color:var(--matcha-bright);"><span>Discount</span><span>-${formatPrice(discountCost)}</span></div>` : ''}
+            <div class="order-detail-total-row grand"><span>Total</span><span style="color:var(--antique-gold);">${formatPrice(total)}</span></div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('order-detail-modal').classList.add('open');
+    };
+
+    window.closeOrderDetail = function() {
+      document.getElementById('order-detail-modal').classList.remove('open');
+    };
+
+    document.getElementById('order-detail-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('order-detail-modal')) closeOrderDetail();
+    });
+
+    mailingToggle.addEventListener('change', async () => {
+      const optIn = mailingToggle.checked;
+      mailingStatusLabel.textContent = optIn ? 'Subscribing...' : 'Unsubscribing...';
+      try {
+        await toggleMailingList(currentUser.id, optIn);
+        mailingStatusLabel.textContent = optIn ? 'Subscribed to newsletter' : 'Not subscribed';
+      } catch {
+        mailingToggle.checked = !optIn;
+        mailingStatusLabel.textContent = optIn ? 'Subscribed to newsletter' : 'Not subscribed';
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await logout();
+      window.location.href = 'index.html';
+    });
+
+    init();
+  </script>
+</body>
+</html>

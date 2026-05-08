@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — eebecco</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-logo">
+    <img src="../logo.jpg" alt="eebecco" onerror="this.style.display='none'">
+    <span>Admin Panel</span>
+  </div>
+
+  <div class="login-card">
+    <h1>Sign in</h1>
+    <p>Access the eebecco admin panel</p>
+
+    <div id="alert-area"></div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="admin@eebecco.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary" id="login-btn">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+  import supabase from '../js/supabase.js';
+
+  const form = document.getElementById('login-form');
+  const btn = document.getElementById('login-btn');
+  const alertArea = document.getElementById('alert-area');
+
+  function showAlert(msg, type = 'error') {
+    alertArea.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    showAlert('');
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error || !data.user) {
+      showAlert(error?.message || 'Login failed. Check your credentials.');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', data.user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      await supabase.auth.signOut();
+      showAlert('Access denied. You are not an admin.');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      return;
+    }
+
+    sessionStorage.setItem('admin_uid', data.user.id);
+    sessionStorage.setItem('admin_email', data.user.email);
+    window.location.href = 'index.html';
+  });
+</script>
+</body>
+</html>

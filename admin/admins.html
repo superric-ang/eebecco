@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Users — eebecco Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <a href="index.html" class="admin-sidebar-logo">
+        <img src="../logo.jpg" alt="eebecco" onerror="this.style.display='none'">
+        <div><span>eebecco</span><small>Admin Panel</small></div>
+      </a>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-section">Main</div>
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <div class="admin-nav-section">Catalog</div>
+      <a href="products.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        Products
+      </a>
+      <a href="stock.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+        Stock
+      </a>
+      <div class="admin-nav-section">Content</div>
+      <a href="pages.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Pages
+      </a>
+      <div class="admin-nav-section">Engagement</div>
+      <a href="contacts.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Contact Inquiries
+      </a>
+
+      <div class="admin-nav-section">Settings</div>
+      <a href="admins.html" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Admin Users
+      </a>
+      <a href="#" id="logout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </a>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="user-name">Admin</div>
+          <div class="user-email" id="user-email">—</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h2>Admin Users</h2>
+        <div class="breadcrumb"><a href="index.html">Admin</a> / Admin Users</div>
+      </div>
+    </div>
+
+    <div id="alert-area"></div>
+
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3>Current Admins</h3>
+      </div>
+      <div id="admins-list">
+        <div style="text-align:center; color:var(--admin-text-dim); padding:2rem;">Loading...</div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3>Make a User an Admin</h3>
+      </div>
+      <p style="font-size:0.82rem; color:var(--admin-text-dim); margin-bottom:1rem;">Enter the email address of any registered user to grant them admin access. They must have an existing account.</p>
+      <div style="display:flex; gap:0.75rem; max-width:500px;">
+        <input type="email" id="promote-email" placeholder="user@example.com" style="flex:1; padding:0.6rem 1rem; background:var(--admin-sidebar); border:1px solid var(--admin-border); border-radius:8px; color:var(--admin-text); font-size:0.85rem; font-family:var(--font-main);">
+        <button class="btn btn-primary btn-sm" id="promote-btn">Grant Admin</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3>All Registered Users</h3>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr><td colspan="4" style="text-align:center; color:var(--admin-text-dim); padding:2rem;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import supabase from '../js/supabase.js';
+
+  if (!sessionStorage.getItem('admin_uid')) { window.location.href = 'admin-login.html'; }
+
+  const currentUid = sessionStorage.getItem('admin_uid');
+  const email = sessionStorage.getItem('admin_email');
+  document.getElementById('user-name').textContent = email ? email.split('@')[0] : 'Admin';
+  document.getElementById('user-email').textContent = email || '—';
+  document.getElementById('user-avatar').textContent = email ? email[0].toUpperCase() : 'A';
+
+  document.getElementById('logout-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    sessionStorage.clear();
+    window.location.href = 'admin-login.html';
+  });
+
+  function showAlert(msg, type = 'success') {
+    document.getElementById('alert-area').innerHTML = msg ? `<div class="alert alert-${type}">${msg}</div>` : '';
+    if (msg) setTimeout(() => { document.getElementById('alert-area').innerHTML = ''; }, 4000);
+  }
+
+  async function loadUsers() {
+    const { data: profiles, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('is_admin', { ascending: false });
+
+    if (error || !profiles) return;
+
+    const admins = profiles.filter(p => p.is_admin);
+    const adminsEl = document.getElementById('admins-list');
+    adminsEl.innerHTML = admins.length ? admins.map(p => `
+      <div class="admins-list-item">
+        <div class="user-info">
+          <div class="user-avatar">${(p.email || 'A')[0].toUpperCase()}</div>
+          <div>
+            <div class="user-name">${p.full_name || p.email?.split('@')[0] || 'Admin'}</div>
+            <div class="user-email">${p.email || '—'}</div>
+          </div>
+        </div>
+        ${p.id === currentUid ? '<span class="is-you">You</span>' : `<button class="btn btn-danger btn-sm" onclick="removeAdmin('${p.id}', '${p.email}')">Remove Admin</button>`}
+      </div>
+    `).join('') : '<p style="color:var(--admin-text-dim); font-size:0.85rem;">No admins found.</p>';
+
+    const allUsers = profiles;
+    const tbody = document.getElementById('users-tbody');
+    tbody.innerHTML = allUsers.map(p => `
+      <tr>
+        <td>
+          <div class="product-cell">
+            <div class="user-avatar" style="width:36px;height:36px;font-size:0.85rem;">${(p.email || 'A')[0].toUpperCase()}</div>
+            <div style="font-weight:500;">${p.full_name || p.email?.split('@')[0] || '—'}</div>
+          </div>
+        </td>
+        <td style="color:var(--admin-text-dim);">${p.email || '—'}</td>
+        <td>${p.is_admin ? '<span class="badge-tag">Admin</span>' : '<span style="font-size:0.75rem; color:var(--admin-text-dim);">User</span>'}</td>
+        <td>
+          ${!p.is_admin ? `<button class="btn btn-secondary btn-sm" onclick="makeAdmin('${p.id}')">Make Admin</button>` : (p.id !== currentUid ? `<button class="btn btn-danger btn-sm" onclick="removeAdmin('${p.id}', '${p.email}')">Remove</button>` : '—')}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  window.makeAdmin = async function(id) {
+    await supabase.from('profiles').update({ is_admin: true }).eq('id', id);
+    showAlert('Admin access granted.');
+    loadUsers();
+  };
+
+  window.removeAdmin = async function(id, email) {
+    if (!confirm(`Remove admin access for ${email || id}?`)) return;
+    await supabase.from('profiles').update({ is_admin: false }).eq('id', id);
+    showAlert('Admin access revoked.');
+    loadUsers();
+  };
+
+  document.getElementById('promote-btn').addEventListener('click', async () => {
+    const emailInput = document.getElementById('promote-email').value.trim();
+    if (!emailInput) return;
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ is_admin: true })
+      .eq('email', emailInput);
+
+    if (error || !data) {
+      showAlert('User not found or update failed.', 'error');
+      return;
+    }
+    showAlert(`Admin access granted to ${emailInput}.`);
+    document.getElementById('promote-email').value = '';
+    loadUsers();
+  });
+
+  loadUsers();
+</script>
+</body>
+</html>

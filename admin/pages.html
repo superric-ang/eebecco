@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pages — eebecco Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <a href="index.html" class="admin-sidebar-logo">
+        <img src="../logo.jpg" alt="eebecco" onerror="this.style.display='none'">
+        <div><span>eebecco</span><small>Admin Panel</small></div>
+      </a>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-section">Main</div>
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <div class="admin-nav-section">Catalog</div>
+      <a href="products.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        Products
+      </a>
+      <a href="stock.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+        Stock
+      </a>
+      <div class="admin-nav-section">Content</div>
+      <a href="pages.html" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Pages
+      </a>
+      <div class="admin-nav-section">Engagement</div>
+      <a href="contacts.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Contact Inquiries
+      </a>
+      <div class="admin-nav-section">Settings</div>
+      <a href="admins.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Admin Users
+      </a>
+      <a href="#" id="logout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </a>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="user-name">Admin</div>
+          <div class="user-email" id="user-email">—</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h2>Pages</h2>
+        <div class="breadcrumb"><a href="index.html">Admin</a> / Pages</div>
+      </div>
+      <a href="page-editor.html" class="btn btn-primary btn-sm">+ New Page</a>
+    </div>
+
+    <div style="display:flex; gap:0.75rem; margin-bottom:1.5rem; align-items:center;">
+      <input type="text" id="search-input" placeholder="Search pages..." style="flex:1; padding:0.6rem 1rem; background:var(--admin-sidebar); border:1px solid var(--admin-border); border-radius:8px; color:var(--admin-text); font-size:0.85rem; font-family:var(--font-main);">
+      <select id="filter-status" style="padding:0.6rem 1rem; background:var(--admin-sidebar); border:1px solid var(--admin-border); border-radius:8px; color:var(--admin-text); font-size:0.85rem; font-family:var(--font-main);">
+        <option value="">All Status</option>
+        <option value="published">Published</option>
+        <option value="draft">Draft</option>
+      </select>
+    </div>
+
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Slug / URL</th>
+            <th>Elements</th>
+            <th>Status</th>
+            <th>Last Updated</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="pages-tbody">
+          <tr><td colspan="6" style="text-align:center; color:var(--admin-text-dim); padding:2rem;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import supabase from '../js/supabase.js';
+
+  if (!sessionStorage.getItem('admin_uid')) { window.location.href = 'admin-login.html'; }
+
+  const email = sessionStorage.getItem('admin_email');
+  document.getElementById('user-name').textContent = email ? email.split('@')[0] : 'Admin';
+  document.getElementById('user-email').textContent = email || '—';
+  document.getElementById('user-avatar').textContent = email ? email[0].toUpperCase() : 'A';
+
+  document.getElementById('logout-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    sessionStorage.clear();
+    window.location.href = 'admin-login.html';
+  });
+
+  let allPages = [];
+
+  async function loadPages() {
+    const tbody = document.getElementById('pages-tbody');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--admin-text-dim); padding:2rem;">Loading...</td></tr>';
+
+    const { data, error } = await supabase
+      .from('pages')
+      .select('id, title, slug, status, content, updated_at')
+      .order('updated_at', { ascending: false });
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--admin-danger); padding:2rem;">
+        Error loading pages. Make sure the <code>pages</code> table exists in Supabase.<br>
+        <small style="color:var(--admin-text-dim); display:block; margin-top:0.5rem;">${error.message}</small>
+        <div style="margin-top:1rem;">
+          <button id="create-table-hint" class="btn btn-secondary btn-sm" onclick="document.getElementById('sql-hint').style.display='block'">Show Setup SQL</button>
+        </div>
+        <pre id="sql-hint" style="display:none; margin-top:1rem; text-align:left; background:var(--admin-sidebar); padding:1rem; border-radius:8px; font-size:0.75rem; color:var(--admin-text-dim); white-space:pre-wrap;">CREATE TABLE pages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  status TEXT DEFAULT 'draft' CHECK (status IN ('draft','published')),
+  content JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admins can manage pages" ON pages FOR ALL USING (true);</pre>
+      </td></tr>`;
+      return;
+    }
+
+    allPages = data || [];
+    renderPages(allPages);
+  }
+
+  function renderPages(pages) {
+    const tbody = document.getElementById('pages-tbody');
+    if (!pages.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--admin-text-dim); padding:2rem;">No pages yet. <a href="page-editor.html" style="color:var(--admin-gold);">Create your first page</a>.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = pages.map(p => {
+      const elemCount = Array.isArray(p.content) ? p.content.length : 0;
+      const statusBadge = p.status === 'published'
+        ? '<span style="color:var(--admin-success); font-size:0.75rem; display:inline-flex; align-items:center; gap:0.3rem;"><svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>Published</span>'
+        : '<span style="color:var(--admin-text-dim); font-size:0.75rem; display:inline-flex; align-items:center; gap:0.3rem;"><svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>Draft</span>';
+      const updated = p.updated_at ? new Date(p.updated_at).toLocaleDateString('en-SG', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+      return `<tr>
+        <td style="font-weight:500;">${escHtml(p.title)}</td>
+        <td><code style="font-size:0.78rem; color:var(--admin-text-dim); background:rgba(255,255,255,0.04); padding:0.2rem 0.5rem; border-radius:4px;">/${escHtml(p.slug)}</code></td>
+        <td style="color:var(--admin-text-dim);">${elemCount} element${elemCount !== 1 ? 's' : ''}</td>
+        <td>${statusBadge}</td>
+        <td style="color:var(--admin-text-dim); font-size:0.82rem;">${updated}</td>
+        <td>
+          <div class="action-btns">
+            <a href="page-editor.html?id=${p.id}" class="btn-edit">Edit</a>
+            <button class="btn-delete" data-id="${p.id}" data-title="${escHtml(p.title)}">Delete</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm(`Delete page "${btn.dataset.title}"? This cannot be undone.`)) return;
+        const { error } = await supabase.from('pages').delete().eq('id', btn.dataset.id);
+        if (!error) loadPages();
+        else alert('Error: ' + error.message);
+      });
+    });
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.getElementById('search-input').addEventListener('input', filterPages);
+  document.getElementById('filter-status').addEventListener('change', filterPages);
+
+  function filterPages() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const status = document.getElementById('filter-status').value;
+    let filtered = allPages;
+    if (q) filtered = filtered.filter(p => p.title.toLowerCase().includes(q) || p.slug.toLowerCase().includes(q));
+    if (status) filtered = filtered.filter(p => p.status === status);
+    renderPages(filtered);
+  }
+
+  loadPages();
+</script>
+</body>
+</html>

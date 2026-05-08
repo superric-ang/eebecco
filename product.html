@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Ceremonial Matcha — eebecco</title>
+  <meta name="description" id="page-description" content="Premium ceremonial matcha from Uji, Kyoto. Stone-ground in small batches, third-party tested, direct from family farms in Japan.">
+  <meta name="keywords" content="uji matcha, ceremonial matcha, japanese green tea, stone ground matcha, kyoto matcha, matcha powder">
+  <link rel="canonical" id="page-canonical" href="https://eebecco.com/product.html">
+  <meta property="og:type" content="product">
+  <meta property="og:title" id="og-title" content="Ceremonial Matcha — eebecco">
+  <meta property="og:description" id="og-description" content="Premium ceremonial matcha from Uji, Kyoto. Stone-ground in small batches.">
+  <meta property="og:url" content="https://eebecco.com/product.html">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json" id="product-schema"></script>
+</head>
+<body>
+
+  <!-- ══ CART DRAWER ══ -->
+  <div id="cart-overlay" class="cart-drawer-overlay"></div>
+  <div id="cart-drawer">
+    <div class="cart-drawer-header">
+      <span class="cart-drawer-title">Your Cart</span>
+      <button class="cart-close-btn" id="close-cart" aria-label="Close cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="cart-items">
+      <p style="text-align:center; color:rgba(245,236,215,0.4); padding:3rem 0; font-family:var(--font-display); font-size:1.1rem;">Your cart is empty</p>
+    </div>
+    <div class="cart-drawer-footer">
+      <div class="cart-total-row">
+        <span class="cart-total-label">Total</span>
+        <span class="cart-total-price">$0.00</span>
+      </div>
+      <button class="btn btn-primary" id="checkout-btn">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <a href="index.html" class="header-logo"><img src="logo.jpg" alt="eebecco" style="height:36px; object-fit:contain;"></a>
+    <nav class="header-nav">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="learn.html">Learn</a>
+      <a href="quality.html">Quality</a>
+      <a href="contact.html">Contact Us</a>
+      <span class="nav-auth-group" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--gold-border);">
+        <a href="login.html" id="nav-login-link" style="font-size:0.75rem; color:var(--antique-gold);">Login</a>
+        <a href="register.html" id="nav-register-link" style="font-size:0.75rem; color:var(--antique-gold);">Register</a>
+        <a href="account.html" id="nav-account-link" class="nav-account-link" style="display:none; font-size:0.75rem; color:var(--warm-cream);">
+          <span class="nav-account-name">Account</span>
+        </a>
+        <a href="#" id="nav-logout-btn" style="display:none; font-size:0.75rem; color:#c94040;">Logout</a>
+      </span>
+    </nav>
+    <div class="header-actions">
+      <button class="cart-btn" aria-label="Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span class="cart-count">0</span>
+      </button>
+      <button class="menu-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="product-detail">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span>/</span>
+        <a href="shop.html">Shop</a>
+        <span>/</span>
+        <span id="breadcrumb-product" style="color:var(--antique-gold);">Ceremonial</span>
+      </nav>
+
+      <div class="product-detail-layout">
+
+        <!-- Gallery -->
+        <div class="product-gallery reveal">
+          <div class="product-gallery-main" id="product-gallery-main" style="background: linear-gradient(160deg, #0D1E0E 0%, #1E3A1F 40%, #2D5A27 80%);">
+            <img id="product-gallery-img" src="" alt="" onerror="this.style.display='none'">
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="product-info reveal reveal-delay-2">
+          <span class="product-info-grade" id="product-grade">Ceremonial</span>
+          <h1 class="product-info-title" id="product-title">UJI Ceremonial Matcha A</h1>
+
+          <div class="gold-divider" style="margin-bottom:1rem;">
+            <div class="gold-divider-line" style="max-width:60px;"></div>
+            <div class="gold-divider-ornament">◆</div>
+            <div class="gold-divider-line" style="max-width:60px;"></div>
+          </div>
+
+          <p class="product-info-price" id="product-price">$52.00</p>
+
+          <p class="product-info-desc" id="product-desc">From the first spring harvest in Uji, Kyoto. These young leaves are shaded for 30 days before hand-picking, then stone-ground to a talc-like powder. The result is a matcha of exceptional sweetness, depth, and a vibrant jade hue.</p>
+
+          <div class="product-specs" id="product-specs">
+            <div class="product-spec">
+              <span class="product-spec-label">Grade</span>
+              <span class="product-spec-value" id="spec-grade">Ceremonial (御抹茶)</span>
+            </div>
+            <div class="product-spec">
+              <span class="product-spec-label">Origin</span>
+              <span class="product-spec-value">Uji, Kyoto, Japan</span>
+            </div>
+            <div class="product-spec">
+              <span class="product-spec-label">Harvest</span>
+              <span class="product-spec-value">First Harvest (一番茶)</span>
+            </div>
+            <div class="product-spec">
+              <span class="product-spec-label">Cultivar</span>
+              <span class="product-spec-value">Samidori &amp; Yabukita</span>
+            </div>
+            <div class="product-spec">
+              <span class="product-spec-label">Shading</span>
+              <span class="product-spec-value">30 days (tana method)</span>
+            </div>
+            <div class="product-spec">
+              <span class="product-spec-label">Processing</span>
+              <span class="product-spec-value">Stone-ground, unblended</span>
+            </div>
+            <div class="product-spec">
+              <span class="product-spec-label">Net Weight</span>
+              <span class="product-spec-value">40g / 1.4 oz</span>
+            </div>
+            <div class="product-spec">
+              <span class="product-spec-label">Milled</span>
+              <span class="product-spec-value">April 2026</span>
+            </div>
+          </div>
+
+          <p class="product-tasting" id="product-tasting">
+            <strong>Tasting Notes:</strong> Sweet pea, organic cacao, marine umami, chestnut. Exceptionally smooth with no bitterness.
+          </p>
+
+          <div class="product-actions">
+            <div class="quantity-selector">
+              <button class="qty-minus" aria-label="Decrease quantity">&minus;</button>
+              <span class="qty-value">1</span>
+              <button class="qty-plus" aria-label="Increase quantity">+</button>
+            </div>
+            <button class="btn btn-primary add-to-cart" style="flex:1; justify-content:center;">Add to Cart</button>
+          </div>
+
+          <p class="product-trust">
+            Radiation &amp; heavy metal tested &nbsp;·&nbsp; Direct from family farm &nbsp;·&nbsp; Ships within 24 hours
+          </p>
+
+          <div style="display:flex; gap:1.5rem; margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--gold-border);">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem; flex:1; text-align:center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9933A" stroke-width="1.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span style="font-family:var(--font-label); font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,236,215,0.4);">Lab Tested</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem; flex:1; text-align:center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9933A" stroke-width="1.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <span style="font-family:var(--font-label); font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,236,215,0.4);">Traceable</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem; flex:1; text-align:center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9933A" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span style="font-family:var(--font-label); font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,236,215,0.4);">Fresh Milled</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem; flex:1; text-align:center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9933A" stroke-width="1.2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <span style="font-family:var(--font-label); font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,236,215,0.4);">Fast Shipping</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Related products -->
+      <div style="margin-top:6rem;">
+        <div class="gold-divider" style="margin-bottom:2.5rem;">
+          <div class="gold-divider-line"></div>
+          <div class="gold-divider-ornament">◆ &nbsp; You May Also Enjoy &nbsp; ◆</div>
+          <div class="gold-divider-line"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem;" id="related-products">
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="header-logo"><img src="logo.jpg" alt="eebecco" style="height:36px; object-fit:contain;"></a>
+          <p>Stone-ground matcha from the shaded fields of Uji, Kyoto. Cultivated with care for over a century, shared with mindfulness for a new generation.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <a href="shop.html">All Products</a>
+          <a href="shop.html?grade=ceremonial">Ceremonial Matcha</a>
+          <a href="shop.html?grade=premium">Hou Ji Cha</a>
+        </div>
+        <div class="footer-col">
+          <h4>Learn</h4>
+          <a href="learn.html">Brewing Guides</a>
+          <a href="learn.html">Grade Guide</a>
+          <a href="learn.html">The Ritual</a>
+          <a href="quality.html">Quality Standards</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="#">Instagram</a>
+          <a href="contact.html">Contact Us</a>
+          <a href="#">Shipping</a>
+          <a href="#">Returns</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 eebecco. All rights reserved.</span>
+        <div class="footer-social">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Pinterest">Pi</a>
+          <a href="#" aria-label="YouTube">YT</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import supabase from './js/supabase.js';
+
+    let currentProduct = null;
+    let allProducts = [];
+
+    async function loadAllProducts() {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true);
+      allProducts = data || [];
+    }
+
+    async function getProductFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('name');
+      if (!slug) return null;
+
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('slug', decodeURIComponent(slug))
+        .single();
+
+      if (error) {
+        console.error('Error fetching product:', error);
+        return null;
+      }
+      return data;
+    }
+
+    function renderProduct(product) {
+      if (!product) return;
+
+      currentProduct = product;
+      const imageUrl = product.image_url || 'ceremonial A.jpg';
+      const gradeDisplay = product.grade_label || product.grade || '';
+
+      document.getElementById('page-title').textContent = product.name + ' — eebecco | Premium Uji Ceremonial Matcha';
+      document.getElementById('page-description').content = product.name + ' from Uji, Kyoto. Stone-ground ceremonial matcha, third-party tested, direct from family farms in Japan.';
+      document.getElementById('og-title').content = product.name + ' — eebecco';
+      document.getElementById('og-description').content = (product.description || '').substring(0, 150) + '...';
+
+      document.getElementById('product-title').textContent = product.name;
+      document.getElementById('product-grade').textContent = gradeDisplay;
+      document.getElementById('breadcrumb-product').textContent = gradeDisplay;
+      document.getElementById('product-price').textContent = 'S$' + product.price.toFixed(2);
+      document.getElementById('product-desc').textContent = product.description || '';
+      document.getElementById('product-tasting').innerHTML = product.tasting || '';
+
+      const img = document.getElementById('product-gallery-img');
+      img.src = imageUrl;
+      img.alt = product.name;
+
+      const specs = product.specs ? JSON.parse(product.specs) : {};
+      const specsEl = document.getElementById('product-specs');
+      specsEl.innerHTML = Object.entries(specs).map(([key, val]) => `
+        <div class="product-spec">
+          <span class="product-spec-label">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+          <span class="product-spec-value">${val}</span>
+        </div>
+      `).join('');
+
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.name,
+        "description": product.description,
+        "brand": {"@type": "Brand", "name": "eebecco"},
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "SGD",
+          "price": product.price,
+          "availability": "https://schema.org/InStock"
+        }
+      };
+      document.getElementById('product-schema').textContent = JSON.stringify(schema);
+
+      const addToCartBtn = document.querySelector('.add-to-cart');
+      if (addToCartBtn) {
+        addToCartBtn.dataset.name = product.name;
+        addToCartBtn.dataset.price = product.price;
+        addToCartBtn.dataset.grade = product.grade || '';
+        addToCartBtn.dataset.image = imageUrl;
+      }
+
+      renderRelatedProducts();
+    }
+
+    function renderRelatedProducts() {
+      const related = document.getElementById('related-products');
+      if (!related) return;
+
+      const others = allProducts.filter(p => p.slug !== currentProduct?.slug);
+
+      related.innerHTML = others.map(product => {
+        const imageUrl = product.image_url || 'ceremonial A.jpg';
+        const gradeDisplay = product.grade_label || product.grade || '';
+        return `
+          <article class="product-card reveal" data-grade="${product.grade || ''}">
+            <div class="card-corners">
+              <svg class="corner corner-tl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-br" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+            </div>
+            <a href="product.html?name=${encodeURIComponent(product.slug)}">
+              <div class="product-card-image">
+                <img src="${imageUrl}" alt="${product.name}" onerror="this.style.display='none'">
+                ${product.badge ? `<span class="product-card-badge">${product.badge}</span>` : ''}
+              </div>
+            </a>
+            <div class="product-card-body">
+              <p class="product-card-grade">${gradeDisplay}  ·  Uji</p>
+              <h3 class="product-card-title">${product.name}</h3>
+              <p class="product-card-desc">${(product.description || '').substring(0, 80)}...</p>
+              <div class="product-card-footer">
+                <span class="product-card-price">S$${product.price}</span>
+                <button class="btn btn-ghost add-to-cart" style="font-size:0.68rem; padding:0.55rem 1.2rem;"
+                  data-name="${product.name}"
+                  data-price="${product.price}"
+                  data-grade="${product.grade || ''}"
+                  data-image="${imageUrl}">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    async function init() {
+      await loadAllProducts();
+      const product = await getProductFromURL();
+      if (product) {
+        renderProduct(product);
+      } else {
+        document.querySelector('.product-detail').innerHTML = '<div class="container" style="padding:4rem 0; text-align:center;"><h2>Product not found</h2><p>Please return to the <a href="shop.html">shop</a>.</p></div>';
+      }
+    }
+
+    init();
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>

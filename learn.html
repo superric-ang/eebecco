@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn — eebecco | Matcha Brewing Guides, Grade Guide & Ritual</title>
+  <meta name="description" content="Learn how to prepare matcha with our step-by-step guides. Understand the difference between ceremonial matcha A, AA, UJI Barista Matcha, and Hou Ji Cha. Master the ritual of whisked matcha.">
+  <meta name="keywords" content="how to prepare matcha, matcha brewing guide, ceremonial matcha vs hou ji cha, whisk matcha, chasen, usucha, koicha, japanese tea guide">
+  <link rel="canonical" href="https://eebecco.com/learn.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Learn — eebecco | Matcha Guides & Ritual">
+  <meta property="og:description" content="Step-by-step matcha preparation guides. Learn about ceremonial matcha grades, brewing techniques, and the meditative ritual of matcha.">
+  <meta property="og:url" content="https://eebecco.com/learn.html">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ══ CART DRAWER ══ -->
+  <div id="cart-overlay" class="cart-drawer-overlay"></div>
+  <div id="cart-drawer">
+    <div class="cart-drawer-header">
+      <span class="cart-drawer-title">Your Cart</span>
+      <button class="cart-close-btn" id="close-cart" aria-label="Close cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="cart-items">
+      <p style="text-align:center; color:rgba(245,236,215,0.4); padding:3rem 0; font-family:var(--font-display); font-size:1.1rem;">Your cart is empty</p>
+    </div>
+    <div class="cart-drawer-footer">
+      <div class="cart-total-row">
+        <span class="cart-total-label">Total</span>
+        <span class="cart-total-price">$0.00</span>
+      </div>
+      <button class="btn btn-primary" id="checkout-btn">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <a href="index.html" class="header-logo"><img src="logo.jpg" alt="eebecco" style="height:36px; object-fit:contain;"></a>
+    <nav class="header-nav">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="learn.html" class="nav-active">Learn</a>
+      <a href="quality.html">Quality</a>
+      <a href="contact.html">Contact Us</a>
+      <span class="nav-auth-group" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--gold-border);">
+        <a href="login.html" id="nav-login-link" style="font-size:0.75rem; color:var(--antique-gold);">Login</a>
+        <a href="register.html" id="nav-register-link" style="font-size:0.75rem; color:var(--antique-gold);">Register</a>
+        <a href="account.html" id="nav-account-link" class="nav-account-link" style="display:none; font-size:0.75rem; color:var(--warm-cream);">
+          <span class="nav-account-name">Account</span>
+        </a>
+        <a href="#" id="nav-logout-btn" style="display:none; font-size:0.75rem; color:#c94040;">Logout</a>
+      </span>
+    </nav>
+    <div class="header-actions">
+      <button class="cart-btn" aria-label="Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span class="cart-count">0</span>
+      </button>
+      <button class="menu-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="page-header-bg" style="background-image: url('Powder.jpg');"></div>
+    <div class="container" style="position:relative; z-index:2;">
+      <span class="section-eyebrow reveal">Education</span>
+      <h1 class="section-title reveal reveal-delay-1">The Way of <em>Matcha</em></h1>
+      <div class="gold-divider centered reveal reveal-delay-2">
+        <div class="gold-divider-line"></div>
+        <div class="gold-divider-ornament">◆ &nbsp; ◆ &nbsp; ◆</div>
+        <div class="gold-divider-line"></div>
+      </div>
+      <p class="section-subtitle reveal reveal-delay-3">Whether you are new to matcha or deepening your practice, our guides will help you choose, prepare, and appreciate every bowl.</p>
+    </div>
+  </section>
+
+  <main class="page-main">
+    <div class="container">
+
+      <div style="margin-bottom: 5rem;">
+        <span class="section-eyebrow reveal">Our Teas</span>
+        <h2 class="section-title reveal reveal-delay-1" style="font-size: clamp(1.6rem, 3vw, 2.2rem);">Understanding Our <em>Collection</em></h2>
+        <div class="gold-divider reveal reveal-delay-2">
+          <div class="gold-divider-line"></div>
+          <div class="gold-divider-ornament">◆</div>
+          <div class="gold-divider-line"></div>
+        </div>
+        <p class="section-subtitle reveal reveal-delay-3" style="max-width:640px; margin-bottom:2.5rem;">Four teas, each with its own character. Understanding what makes each one special helps you choose the right one for your moments.</p>
+
+        <div class="learn-grid">
+          <div class="learn-card reveal reveal-delay-1">
+            <div class="card-corners">
+              <svg class="corner corner-tl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-tr" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-bl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-br" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+            </div>
+            <div class="learn-card-image" style="background: linear-gradient(135deg, #0D1E0E, #1E3A1F);">
+              <img src="ceremonial%20A.jpg" alt="UJI Ceremonial Matcha A" onerror="this.style.display='none'" style="opacity:0.65">
+              <div class="learn-card-image-label">
+                <span style="font-family:var(--font-jp); font-size:0.65rem; letter-spacing:0.2em; color:var(--antique-gold);">宇治抹茶 A</span>
+              </div>
+            </div>
+            <div class="learn-card-body">
+              <p class="learn-card-tag">Ceremonial Matcha</p>
+              <h3 class="learn-card-title">UJI Ceremonial Matcha A</h3>
+              <p class="learn-card-desc">Our signature ceremonial grade. Made from first-harvest leaves shade-grown for 30 days, then stone-ground to a fine powder. Vibrant jade color, rich umami, and a smooth, sweet finish. Best whisked with water alone for usucha.</p>
+            </div>
+          </div>
+
+          <div class="learn-card reveal reveal-delay-2">
+            <div class="card-corners">
+              <svg class="corner corner-tl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-tr" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-bl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-br" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+            </div>
+            <div class="learn-card-image" style="background: linear-gradient(135deg, #1A2F14, #2D5A27);">
+              <img src="ceremonial%20AA.jpg" alt="UJI Ceremonial Matcha AA" onerror="this.style.display='none'" style="opacity:0.65">
+              <div class="learn-card-image-label">
+                <span style="font-family:var(--font-jp); font-size:0.65rem; letter-spacing:0.2em; color:var(--antique-gold);">宇治抹茶 AA</span>
+              </div>
+            </div>
+            <div class="learn-card-body">
+              <p class="learn-card-tag">Ceremonial Matcha — Highest Grade</p>
+              <h3 class="learn-card-title">UJI Ceremonial Matcha AA</h3>
+              <p class="learn-card-desc">Our highest expression of Uji matcha. Crafted from the finest tencha leaves harvested in the first spring flush. Exceptionally deep umami, refined sweetness, and a velvety texture. Designed for koicha and contemplative moments.</p>
+            </div>
+          </div>
+
+          <div class="learn-card reveal reveal-delay-3">
+            <div class="card-corners">
+              <svg class="corner corner-tl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-tr" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-bl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-br" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+            </div>
+            <div class="learn-card-image">
+              <img src="ceremonial%20A.jpg" alt="UJI Barista Matcha">
+              <div class="learn-card-image-label">
+                <span style="font-family:var(--font-jp); font-size:0.65rem; letter-spacing:0.2em; color:var(--antique-gold);">宇治バリスタ抹茶</span>
+              </div>
+            </div>
+            <div class="learn-card-body">
+              <p class="learn-card-tag">Barista Matcha — Limited</p>
+              <h3 class="learn-card-title">UJI Barista Matcha</h3>
+              <p class="learn-card-desc">A bold, robust matcha with deep umami character. Specially selected for those who appreciate a more assertive, full-bodied cup. Excellent for mornings or when you want something that truly commands attention.</p>
+            </div>
+          </div>
+
+          <div class="learn-card reveal reveal-delay-4">
+            <div class="card-corners">
+              <svg class="corner corner-tl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-tr" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-bl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-br" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+            </div>
+            <div class="learn-card-image">
+              <img src="ceremonial%20A.jpg" alt="Hou Ji Cha aged green tea">
+              <div class="learn-card-image-label">
+                <span style="font-family:var(--font-jp); font-size:0.65rem; letter-spacing:0.2em; color:var(--antique-gold);">焙じ茶</span>
+              </div>
+            </div>
+            <div class="learn-card-body">
+              <p class="learn-card-tag">Premium — Limited</p>
+              <h3 class="learn-card-title">Hou Ji Cha (焙じ茶)</h3>
+              <p class="learn-card-desc">"Hou Ji Cha" literally means "Emperor's Tea" — a precious aged green tea from Uji, Kyoto, aged for 5 years for extraordinary depth. Walnut, dried longan, old book, and a sweetness that only time can confer. Steeped rather than whisked.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 5rem;">
+        <span class="section-eyebrow reveal">Preparation</span>
+        <h2 class="section-title reveal reveal-delay-1" style="font-size: clamp(1.6rem, 3vw, 2.2rem);">Step-by-Step <em>Guides</em></h2>
+        <div class="gold-divider reveal reveal-delay-2">
+          <div class="gold-divider-line"></div>
+          <div class="gold-divider-ornament">◆</div>
+          <div class="gold-divider-line"></div>
+        </div>
+
+        <div class="learn-grid">
+
+          <div class="learn-card reveal reveal-delay-1">
+            <div class="card-corners">
+              <svg class="corner corner-tl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-br" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+            </div>
+            <div class="learn-card-image" style="background: var(--rich-espresso); padding: 2rem; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.4rem; border-bottom: 1px solid var(--gold-border);">
+              <span style="font-family:var(--font-jp); font-size:0.7rem; letter-spacing:0.2em; color:var(--antique-gold);">薄茶</span>
+              <span style="font-family:var(--font-display); font-size:1.3rem; color:var(--white);">Usucha</span>
+              <span style="font-size:0.75rem; color:rgba(245,236,215,0.4); font-family:var(--font-label); letter-spacing:0.05em;">Whisked thin matcha — everyday ritual</span>
+            </div>
+            <div class="learn-card-body">
+              <p class="learn-card-tag">Traditional</p>
+              <h3 class="learn-card-title">Usucha Preparation</h3>
+              <p class="learn-card-desc" style="margin-bottom:0.85rem;">The most common way to enjoy ceremonial matcha. Light, frothy, and aromatic.</p>
+              <ol class="learn-ol">
+                <li>Warm your bowl with hot water, then dry it</li>
+                <li>Sift 1–2 tsp (2g) of matcha into the bowl</li>
+                <li>Add 80ml of water at 70°C (160°F)</li>
+                <li>Whisk in a rapid "W" motion until frothy</li>
+                <li>Drink directly from the bowl, savoring each sip</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="learn-card reveal reveal-delay-2">
+            <div class="card-corners">
+              <svg class="corner corner-tl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-br" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+            </div>
+            <div class="learn-card-image" style="background: var(--rich-espresso); padding: 2rem; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.4rem; border-bottom: 1px solid var(--gold-border);">
+              <span style="font-family:var(--font-jp); font-size:0.7rem; letter-spacing:0.2em; color:var(--antique-gold);">濃茶</span>
+              <span style="font-family:var(--font-display); font-size:1.3rem; color:var(--white);">Koicha</span>
+              <span style="font-size:0.75rem; color:rgba(245,236,215,0.4); font-family:var(--font-label); letter-spacing:0.05em;">Thick ceremonial tea — special occasions</span>
+            </div>
+            <div class="learn-card-body">
+              <p class="learn-card-tag">Ceremonial</p>
+              <h3 class="learn-card-title">Koicha Preparation</h3>
+              <p class="learn-card-desc" style="margin-bottom:0.85rem;">A concentrated, velvety preparation reserved for the highest grade matcha and special ceremonies.</p>
+              <ol class="learn-ol">
+                <li>Warm and dry your bowl as with usucha</li>
+                <li>Sift 3–4 tsp (4g) of ceremonial matcha</li>
+                <li>Add only 30ml of water at 70°C (160°F)</li>
+                <li>Knead slowly in a circular motion — no frothing</li>
+                <li>Drink in three slow, mindful sips</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="learn-card reveal reveal-delay-3">
+            <div class="card-corners">
+              <svg class="corner corner-tl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-br" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+            </div>
+            <div class="learn-card-image" style="background: var(--rich-espresso); padding: 2rem; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.4rem; border-bottom: 1px solid var(--gold-border);">
+              <span style="font-family:var(--font-jp); font-size:0.7rem; letter-spacing:0.2em; color:var(--antique-gold);">焙じ茶の淹れ方</span>
+              <span style="font-family:var(--font-display); font-size:1.3rem; color:var(--white);">Hou Ji Cha</span>
+              <span style="font-size:0.75rem; color:rgba(245,236,215,0.4); font-family:var(--font-label); letter-spacing:0.05em;">Steeped roasted green tea — everyday ease</span>
+            </div>
+            <div class="learn-card-body">
+              <p class="learn-card-tag">Roasted Tea</p>
+              <h3 class="learn-card-title">Hou Ji Cha Preparation</h3>
+              <p class="learn-card-desc" style="margin-bottom:0.85rem;">Unlike matcha, Hou Ji Cha is steeped like a traditional tea. Simple, accessible, and deeply satisfying.</p>
+              <ol class="learn-ol">
+                <li>Use 3g of Hou Ji Cha per 200ml of water</li>
+                <li>Heat water to 85°C (185°F) — not boiling</li>
+                <li>Steep for 60 seconds</li>
+                <li>Strain and enjoy hot or over ice</li>
+                <li>Can be re-steeped 2–3 times</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="learn-card reveal reveal-delay-4">
+            <div class="card-corners">
+              <svg class="corner corner-tl" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+              <svg class="corner corner-br" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+            </div>
+            <div class="learn-card-image" style="background: var(--rich-espresso); padding: 2rem; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.4rem; border-bottom: 1px solid var(--gold-border);">
+              <span style="font-family:var(--font-jp); font-size:0.7rem; letter-spacing:0.2em; color:var(--antique-gold);">道具</span>
+              <span style="font-family:var(--font-display); font-size:1.3rem; color:var(--white);">Essential Tools</span>
+              <span style="font-size:0.75rem; color:rgba(245,236,215,0.4); font-family:var(--font-label); letter-spacing:0.05em;">What you need to begin</span>
+            </div>
+            <div class="learn-card-body">
+              <p class="learn-card-tag">Equipment</p>
+              <h3 class="learn-card-title">Matcha Toolkit</h3>
+              <p class="learn-card-desc" style="margin-bottom:0.85rem;">You don't need much to begin your matcha journey. Here are the essentials:</p>
+              <ul style="font-size:0.83rem; color:rgba(245,236,215,0.55); line-height:2.2;">
+                <li style="display:flex; gap:0.75rem; align-items:baseline;"><span style="color:var(--antique-gold); font-size:0.45rem; flex-shrink:0; margin-top:0.6rem;">◆</span> Bamboo whisk (chasen) — creates the foam</li>
+                <li style="display:flex; gap:0.75rem; align-items:baseline;"><span style="color:var(--antique-gold); font-size:0.45rem; flex-shrink:0; margin-top:0.6rem;">◆</span> Bamboo scoop (chashaku) — measures portions</li>
+                <li style="display:flex; gap:0.75rem; align-items:baseline;"><span style="color:var(--antique-gold); font-size:0.45rem; flex-shrink:0; margin-top:0.6rem;">◆</span> Ceramic bowl (chawan) — holds the tea</li>
+                <li style="display:flex; gap:0.75rem; align-items:baseline;"><span style="color:var(--antique-gold); font-size:0.45rem; flex-shrink:0; margin-top:0.6rem;">◆</span> Fine sieve — prevents clumps</li>
+                <li style="display:flex; gap:0.75rem; align-items:baseline;"><span style="color:var(--antique-gold); font-size:0.45rem; flex-shrink:0; margin-top:0.6rem;">◆</span> Thermometer — perfect water temperature</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--gold-border); padding:4rem; text-align:center; background:var(--rich-espresso); margin-bottom:3rem; position:relative;" class="reveal">
+        <svg class="corner corner-tl" style="position:absolute; top:12px; left:12px; width:32px; height:32px; opacity:0.6;" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+        <svg class="corner corner-tr" style="position:absolute; top:12px; right:12px; width:32px; height:32px; opacity:0.6; transform:scaleX(-1);" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+        <svg class="corner corner-bl" style="position:absolute; bottom:12px; left:12px; width:32px; height:32px; opacity:0.6; transform:scaleY(-1);" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+        <svg class="corner corner-br" style="position:absolute; bottom:12px; right:12px; width:32px; height:32px; opacity:0.6; transform:scale(-1);" viewBox="0 0 28 28" fill="none"><path d="M1 27 L1 5 Q1 1 5 1 L27 1" stroke="#C9933A" stroke-width="0.8" fill="none"/><circle cx="3.5" cy="3.5" r="1.2" fill="#C9933A" opacity="0.5"/></svg>
+        <span class="section-eyebrow">The eebecco Difference</span>
+        <h2 style="font-family:var(--font-display); font-size:clamp(1.5rem, 3vw, 2rem); color:var(--white); margin-bottom:1rem;">Matcha you can <em style="color:var(--antique-gold);">trust</em></h2>
+        <div class="gold-divider centered" style="margin:0.75rem 0 1.25rem;">
+          <div class="gold-divider-line"></div>
+          <div class="gold-divider-ornament">◆</div>
+          <div class="gold-divider-line"></div>
+        </div>
+        <p style="font-size:0.9rem; color:rgba(245,236,215,0.6); max-width:520px; margin:0 auto 2rem; line-height:1.85;">Every batch is third-party tested. Every farm is known by name. Every harvest is documented. Learn about our commitment to transparency and quality.</p>
+        <a href="quality.html" class="btn btn-primary">Our Standards</a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="header-logo"><img src="logo.jpg" alt="eebecco" style="height:36px; object-fit:contain;"></a>
+          <p>Stone-ground matcha from the shaded fields of Uji, Kyoto. Cultivated with care for over a century, shared with mindfulness for a new generation.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <a href="shop.html">All Products</a>
+          <a href="shop.html?grade=ceremonial">Ceremonial Matcha</a>
+          <a href="shop.html?grade=premium">Hou Ji Cha</a>
+        </div>
+        <div class="footer-col">
+          <h4>Learn</h4>
+          <a href="learn.html">Brewing Guides</a>
+          <a href="learn.html">Grade Guide</a>
+          <a href="learn.html">The Ritual</a>
+          <a href="quality.html">Quality Standards</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="#">Instagram</a>
+          <a href="contact.html">Contact Us</a>
+          <a href="#">Shipping</a>
+          <a href="#">Returns</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 eebecco. All rights reserved.</span>
+        <div class="footer-social">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Pinterest">Pi</a>
+          <a href="#" aria-label="YouTube">YT</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

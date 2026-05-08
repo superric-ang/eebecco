@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Page Editor — eebecco Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    /* ── Page Editor Layout ── */
+    .editor-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* ── Canvas ── */
+    .editor-canvas-wrap {
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .editor-canvas-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--admin-border);
+      background: var(--admin-sidebar);
+    }
+
+    .editor-canvas-header h3 { font-size: 0.9rem; font-weight: 600; }
+
+    .canvas-body {
+      padding: 1.5rem;
+      min-height: 400px;
+    }
+
+    .empty-canvas {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      color: var(--admin-text-dim);
+      text-align: center;
+      border: 2px dashed var(--admin-border);
+      border-radius: 10px;
+      gap: 0.75rem;
+    }
+
+    .empty-canvas svg { width: 40px; height: 40px; opacity: 0.4; }
+    .empty-canvas p { font-size: 0.88rem; }
+
+    /* ── Elements ── */
+    .page-element {
+      position: relative;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      transition: border-color 0.15s;
+      background: var(--admin-sidebar);
+    }
+
+    .page-element:hover { border-color: var(--admin-border); }
+    .page-element.selected { border-color: var(--admin-gold); background: rgba(201,147,58,0.04); }
+
+    .element-toolbar {
+      display: none;
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: 0 8px 0 8px;
+      padding: 0.2rem;
+      gap: 0.1rem;
+      z-index: 10;
+    }
+
+    .page-element:hover .element-toolbar,
+    .page-element.selected .element-toolbar { display: flex; }
+
+    .element-toolbar button {
+      width: 26px;
+      height: 26px;
+      border: none;
+      background: transparent;
+      color: var(--admin-text-dim);
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      transition: all 0.15s;
+    }
+
+    .element-toolbar button:hover { background: var(--admin-border); color: var(--admin-text); }
+    .element-toolbar button.del-btn:hover { background: rgba(201,64,64,0.2); color: var(--admin-danger); }
+    .element-toolbar button svg { width: 13px; height: 13px; }
+
+    .element-preview {
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+    }
+
+    /* ── Element type labels ── */
+    .elem-type-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--admin-text-dim);
+      margin-bottom: 0.4rem;
+      opacity: 0.7;
+    }
+
+    /* Preview renderings */
+    .preview-heading h1, .preview-heading h2, .preview-heading h3 {
+      color: var(--admin-text);
+      line-height: 1.3;
+      font-weight: 600;
+    }
+    .preview-heading h1 { font-size: 1.6rem; }
+    .preview-heading h2 { font-size: 1.25rem; }
+    .preview-heading h3 { font-size: 1.05rem; }
+
+    .preview-text p { font-size: 0.88rem; color: var(--admin-text-dim); line-height: 1.6; white-space: pre-wrap; }
+
+    .preview-image img { max-width: 100%; max-height: 200px; object-fit: cover; border-radius: 6px; border: 1px solid var(--admin-border); }
+    .preview-image .img-placeholder { display: flex; align-items: center; justify-content: center; height: 100px; background: var(--admin-bg); border-radius: 6px; border: 1px dashed var(--admin-border); color: var(--admin-text-dim); font-size: 0.82rem; gap: 0.5rem; }
+    .preview-image figcaption { font-size: 0.75rem; color: var(--admin-text-dim); margin-top: 0.4rem; font-style: italic; }
+
+    .preview-video .video-frame { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; background: var(--admin-bg); }
+    .preview-video .video-frame iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 6px; }
+    .preview-video .video-placeholder { display: flex; align-items: center; justify-content: center; height: 80px; background: var(--admin-bg); border-radius: 6px; border: 1px dashed var(--admin-border); color: var(--admin-text-dim); font-size: 0.82rem; gap: 0.5rem; }
+
+    .preview-divider hr { border: none; border-top: 1px solid var(--admin-border); margin: 0.5rem 0; }
+
+    .preview-spacer { display: flex; align-items: center; justify-content: center; background: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.02) 4px, rgba(255,255,255,0.02) 8px); border-radius: 4px; }
+    .preview-spacer span { font-size: 0.7rem; color: var(--admin-text-dim); }
+
+    .preview-button .page-btn { display: inline-flex; align-items: center; padding: 0.55rem 1.25rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; text-decoration: none; cursor: default; }
+    .preview-button .page-btn.primary { background: var(--admin-gold); color: #1a1108; }
+    .preview-button .page-btn.secondary { background: transparent; border: 1px solid var(--admin-gold); color: var(--admin-gold); }
+    .preview-button .page-btn.ghost { background: transparent; border: 1px solid var(--admin-border); color: var(--admin-text); }
+
+    .preview-html code { font-size: 0.75rem; color: var(--admin-text-dim); font-family: 'Courier New', monospace; background: var(--admin-bg); padding: 0.5rem; border-radius: 4px; display: block; white-space: pre-wrap; max-height: 80px; overflow: hidden; }
+
+    .preview-columns { display: grid; gap: 0.75rem; }
+    .preview-columns .col-item { background: var(--admin-bg); border: 1px dashed var(--admin-border); border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.78rem; color: var(--admin-text-dim); min-height: 50px; }
+
+    /* ── Sidebar panel ── */
+    .editor-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .editor-panel {
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .editor-panel-header {
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--admin-border);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      background: var(--admin-sidebar);
+    }
+
+    .editor-panel-body { padding: 1.25rem; }
+
+    /* ── Element type picker ── */
+    .element-type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .elem-type-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.75rem 0.5rem;
+      background: var(--admin-sidebar);
+      border: 1px solid var(--admin-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--admin-text-dim);
+      font-size: 0.72rem;
+      font-family: var(--font-main);
+      text-align: center;
+    }
+
+    .elem-type-btn:hover {
+      border-color: var(--admin-gold);
+      color: var(--admin-gold);
+      background: rgba(201,147,58,0.06);
+    }
+
+    .elem-type-btn svg { width: 20px; height: 20px; }
+
+    /* ── Edit Panel ── */
+    #edit-panel { display: none; }
+
+    .edit-panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .edit-panel-title span { font-size: 0.82rem; font-weight: 600; color: var(--admin-gold); }
+
+    #close-edit-panel {
+      background: none;
+      border: none;
+      color: var(--admin-text-dim);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.2rem;
+      line-height: 1;
+    }
+
+    #close-edit-panel:hover { color: var(--admin-text); }
+
+    .edit-panel-fields { display: flex; flex-direction: column; gap: 0.85rem; }
+
+    .edit-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .edit-field label { font-size: 0.72rem; font-weight: 500; color: var(--admin-text-dim); letter-spacing: 0.03em; }
+    .edit-field input,
+    .edit-field select,
+    .edit-field textarea {
+      padding: 0.55rem 0.75rem;
+      background: var(--admin-sidebar);
+      border: 1px solid var(--admin-border);
+      border-radius: 7px;
+      color: var(--admin-text);
+      font-size: 0.85rem;
+      font-family: var(--font-main);
+      transition: border-color 0.15s;
+    }
+    .edit-field input:focus,
+    .edit-field select:focus,
+    .edit-field textarea:focus { outline: none; border-color: var(--admin-gold); }
+    .edit-field textarea { resize: vertical; min-height: 80px; }
+
+    .edit-apply-btn {
+      margin-top: 0.5rem;
+      width: 100%;
+      padding: 0.6rem;
+      background: var(--admin-gold);
+      color: #1a1108;
+      border: none;
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-main);
+      transition: background 0.15s;
+    }
+    .edit-apply-btn:hover { background: var(--admin-gold-hover); }
+
+    /* ── Page Settings panel ── */
+    .page-settings-fields { display: flex; flex-direction: column; gap: 0.85rem; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1100px) {
+      .editor-layout { grid-template-columns: 1fr; }
+      .editor-sidebar { flex-direction: row; flex-wrap: wrap; }
+      .editor-panel { flex: 1; min-width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <a href="index.html" class="admin-sidebar-logo">
+        <img src="../logo.jpg" alt="eebecco" onerror="this.style.display='none'">
+        <div><span>eebecco</span><small>Admin Panel</small></div>
+      </a>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-section">Main</div>
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <div class="admin-nav-section">Catalog</div>
+      <a href="products.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        Products
+      </a>
+      <a href="stock.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+        Stock
+      </a>
+      <div class="admin-nav-section">Content</div>
+      <a href="pages.html" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Pages
+      </a>
+      <div class="admin-nav-section">Engagement</div>
+      <a href="contacts.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Contact Inquiries
+      </a>
+      <div class="admin-nav-section">Settings</div>
+      <a href="admins.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Admin Users
+      </a>
+      <a href="#" id="logout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </a>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="user-name">Admin</div>
+          <div class="user-email" id="user-email">—</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h2 id="page-heading">New Page</h2>
+        <div class="breadcrumb"><a href="index.html">Admin</a> / <a href="pages.html">Pages</a> / <span id="breadcrumb-name">New</span></div>
+      </div>
+      <div style="display:flex; gap:0.5rem; align-items:center;">
+        <div id="save-status" style="font-size:0.78rem; color:var(--admin-text-dim);"></div>
+        <a href="pages.html" class="btn btn-secondary btn-sm">Cancel</a>
+        <button id="save-draft-btn" class="btn btn-secondary btn-sm">Save Draft</button>
+        <button id="publish-btn" class="btn btn-primary btn-sm">Publish</button>
+      </div>
+    </div>
+
+    <div class="editor-layout">
+      <!-- Canvas -->
+      <div>
+        <div class="editor-canvas-wrap">
+          <div class="editor-canvas-header">
+            <h3>Page Content</h3>
+            <span style="font-size:0.75rem; color:var(--admin-text-dim);" id="element-count">0 elements</span>
+          </div>
+          <div class="canvas-body">
+            <div id="canvas-elements"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right sidebar -->
+      <div class="editor-sidebar">
+
+        <!-- Page Settings -->
+        <div class="editor-panel">
+          <div class="editor-panel-header">Page Settings</div>
+          <div class="editor-panel-body">
+            <div class="page-settings-fields">
+              <div class="edit-field">
+                <label>Page Title</label>
+                <input type="text" id="field-title" placeholder="e.g. About Us" oninput="autoSlug()">
+              </div>
+              <div class="edit-field">
+                <label>URL Slug</label>
+                <input type="text" id="field-slug" placeholder="about-us">
+              </div>
+              <div class="edit-field">
+                <label>Status</label>
+                <select id="field-status">
+                  <option value="draft">Draft</option>
+                  <option value="published">Published</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Element -->
+        <div class="editor-panel" id="add-element-panel">
+          <div class="editor-panel-header">Add Element</div>
+          <div class="editor-panel-body">
+            <div class="element-type-grid">
+              <button class="elem-type-btn" onclick="addElement('heading')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16M4 6h16M4 18h10"/></svg>
+                Heading
+              </button>
+              <button class="elem-type-btn" onclick="addElement('text')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="14" y1="18" x2="3" y2="18"/></svg>
+                Text
+              </button>
+              <button class="elem-type-btn" onclick="addElement('image')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Image
+              </button>
+              <button class="elem-type-btn" onclick="addElement('video')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                Video
+              </button>
+              <button class="elem-type-btn" onclick="addElement('button')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="10" rx="5"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                Button
+              </button>
+              <button class="elem-type-btn" onclick="addElement('columns')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg>
+                Columns
+              </button>
+              <button class="elem-type-btn" onclick="addElement('divider')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="12" x2="21" y2="12"/></svg>
+                Divider
+              </button>
+              <button class="elem-type-btn" onclick="addElement('spacer')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="3" x2="21" y2="3"/><line x1="3" y1="21" x2="21" y2="21"/></svg>
+                Spacer
+              </button>
+              <button class="elem-type-btn" onclick="addElement('html')" style="grid-column:span 2;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                HTML / Embed Code
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Panel (shown when element selected) -->
+        <div class="editor-panel" id="edit-panel">
+          <div class="editor-panel-header">Edit Element</div>
+          <div class="editor-panel-body">
+            <div class="edit-panel-title">
+              <span id="edit-panel-type-label">—</span>
+              <button id="close-edit-panel" title="Close">✕</button>
+            </div>
+            <div id="edit-panel-fields" class="edit-panel-fields"></div>
+            <button class="edit-apply-btn" id="apply-edit-btn">Apply Changes</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import supabase from '../js/supabase.js';
+
+  if (!sessionStorage.getItem('admin_uid')) { window.location.href = 'admin-login.html'; }
+
+  const email = sessionStorage.getItem('admin_email');
+  document.getElementById('user-name').textContent = email ? email.split('@')[0] : 'Admin';
+  document.getElementById('user-email').textContent = email || '—';
+  document.getElementById('user-avatar').textContent = email ? email[0].toUpperCase() : 'A';
+
+  document.getElementById('logout-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    sessionStorage.clear();
+    window.location.href = 'admin-login.html';
+  });
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let pageId = null;
+  let elements = [];
+  let selectedId = null;
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('id')) pageId = params.get('id');
+
+  // ── Load existing page ────────────────────────────────────────────────────
+  if (pageId) {
+    document.getElementById('page-heading').textContent = 'Edit Page';
+    document.getElementById('breadcrumb-name').textContent = 'Edit';
+    document.title = 'Edit Page — eebecco Admin';
+
+    const { data, error } = await supabase.from('pages').select('*').eq('id', pageId).single();
+    if (!error && data) {
+      document.getElementById('field-title').value = data.title || '';
+      document.getElementById('field-slug').value = data.slug || '';
+      document.getElementById('field-status').value = data.status || 'draft';
+      document.getElementById('breadcrumb-name').textContent = data.title || 'Edit';
+      elements = Array.isArray(data.content) ? data.content : [];
+      renderCanvas();
+    }
+  }
+
+  // ── Slug auto-generation ─────────────────────────────────────────────────
+  window.autoSlug = function() {
+    const title = document.getElementById('field-title').value;
+    document.getElementById('field-slug').value = title
+      .toLowerCase().trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  };
+
+  // ── Element defaults ──────────────────────────────────────────────────────
+  function defaultData(type) {
+    const map = {
+      heading: { text: 'New Heading', level: 'h2' },
+      text:    { content: 'Enter your text here. Click to edit.' },
+      image:   { url: '', alt: '', caption: '' },
+      video:   { url: '', title: 'Video' },
+      button:  { label: 'Click Here', url: '#', style: 'primary', align: 'left' },
+      columns: { count: 2, items: ['Column 1 content', 'Column 2 content'] },
+      divider: { style: 'solid' },
+      spacer:  { height: 40 },
+      html:    { code: '<!-- Paste your HTML or embed code here -->' },
+    };
+    return map[type] || {};
+  }
+
+  // ── Add element ───────────────────────────────────────────────────────────
+  window.addElement = function(type) {
+    const elem = { id: 'elem-' + Date.now(), type, data: defaultData(type) };
+    elements.push(elem);
+    renderCanvas();
+    selectElement(elem.id);
+    document.getElementById('canvas-elements').lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+
+  // ── Render canvas ─────────────────────────────────────────────────────────
+  function renderCanvas() {
+    const container = document.getElementById('canvas-elements');
+    document.getElementById('element-count').textContent = `${elements.length} element${elements.length !== 1 ? 's' : ''}`;
+
+    if (!elements.length) {
+      container.innerHTML = `<div class="empty-canvas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p>No elements yet.<br>Use the panel on the right to add content.</p>
+      </div>`;
+      return;
+    }
+
+    container.innerHTML = elements.map((el, idx) => renderElementHtml(el, idx)).join('');
+
+    // Bind toolbar buttons
+    container.querySelectorAll('.page-element').forEach(el => {
+      const id = el.dataset.id;
+      el.querySelector('.edit-btn')?.addEventListener('click', (e) => { e.stopPropagation(); selectElement(id); });
+      el.querySelector('.del-btn')?.addEventListener('click', (e) => { e.stopPropagation(); deleteElement(id); });
+      el.querySelector('.up-btn')?.addEventListener('click', (e) => { e.stopPropagation(); moveElement(id, -1); });
+      el.querySelector('.dn-btn')?.addEventListener('click', (e) => { e.stopPropagation(); moveElement(id, 1); });
+      el.addEventListener('click', () => selectElement(id));
+    });
+
+    // Re-highlight selected
+    if (selectedId) {
+      document.querySelector(`.page-element[data-id="${selectedId}"]`)?.classList.add('selected');
+    }
+  }
+
+  function renderElementHtml(el, idx) {
+    const isFirst = idx === 0;
+    const isLast = idx === elements.length - 1;
+    const typeName = { heading:'Heading', text:'Text', image:'Image', video:'Video', button:'Button', columns:'Columns', divider:'Divider', spacer:'Spacer', html:'HTML' }[el.type] || el.type;
+
+    return `<div class="page-element${selectedId === el.id ? ' selected' : ''}" data-id="${el.id}">
+      <div class="element-toolbar">
+        ${!isFirst ? `<button class="up-btn" title="Move up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></button>` : ''}
+        ${!isLast ? `<button class="dn-btn" title="Move down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>` : ''}
+        <button class="edit-btn" title="Edit element"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="del-btn" title="Delete element"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+      </div>
+      <div class="element-preview">
+        <div class="elem-type-label">${typeName}</div>
+        ${renderPreview(el)}
+      </div>
+    </div>`;
+  }
+
+  function renderPreview(el) {
+    const d = el.data;
+    switch (el.type) {
+      case 'heading':
+        return `<div class="preview-heading"><${d.level || 'h2'}>${escHtml(d.text || 'Heading')}</${d.level || 'h2'}></div>`;
+
+      case 'text':
+        return `<div class="preview-text"><p>${escHtml(d.content || '')}</p></div>`;
+
+      case 'image':
+        return `<div class="preview-image">${
+          d.url
+            ? `<img src="${escAttr(d.url)}" alt="${escAttr(d.alt || '')}">`
+            : `<div class="img-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>No image URL set</div>`
+        }${d.caption ? `<figcaption>${escHtml(d.caption)}</figcaption>` : ''}</div>`;
+
+      case 'video': {
+        const embed = toEmbedUrl(d.url || '');
+        return `<div class="preview-video">${embed
+          ? `<div class="video-frame"><iframe src="${escAttr(embed)}" allowfullscreen loading="lazy"></iframe></div>`
+          : `<div class="video-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>No video URL set</div>`
+        }</div>`;
+      }
+
+      case 'button':
+        return `<div class="preview-button" style="text-align:${d.align||'left'}"><span class="page-btn ${d.style||'primary'}">${escHtml(d.label||'Button')}</span></div>`;
+
+      case 'columns': {
+        const cols = parseInt(d.count) || 2;
+        const items = Array.isArray(d.items) ? d.items : Array(cols).fill('');
+        return `<div class="preview-columns" style="grid-template-columns:repeat(${cols},1fr)">${items.slice(0, cols).map((t,i) => `<div class="col-item">${escHtml(t || `Column ${i+1}`)}</div>`).join('')}</div>`;
+      }
+
+      case 'divider':
+        return `<div class="preview-divider"><hr style="border-top-style:${d.style||'solid'};"></div>`;
+
+      case 'spacer':
+        return `<div class="preview-spacer" style="height:${Math.max(8, parseInt(d.height)||40)}px;"><span>${d.height||40}px spacer</span></div>`;
+
+      case 'html':
+        return `<div class="preview-html"><code>${escHtml((d.code||'').substring(0,200))}${(d.code||'').length > 200 ? '…' : ''}</code></div>`;
+
+      default:
+        return `<div style="color:var(--admin-text-dim); font-size:0.8rem;">Unknown element type</div>`;
+    }
+  }
+
+  // ── Select / deselect ─────────────────────────────────────────────────────
+  function selectElement(id) {
+    selectedId = id;
+    document.querySelectorAll('.page-element').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
+    const el = elements.find(e => e.id === id);
+    if (el) openEditPanel(el);
+  }
+
+  // ── Edit panel ────────────────────────────────────────────────────────────
+  const typeLabels = { heading:'Heading', text:'Text Block', image:'Image', video:'Video Embed', button:'Button', columns:'Columns', divider:'Divider', spacer:'Spacer', html:'HTML / Embed' };
+
+  function openEditPanel(el) {
+    const panel = document.getElementById('edit-panel');
+    panel.style.display = 'block';
+    document.getElementById('edit-panel-type-label').textContent = typeLabels[el.type] || el.type;
+    document.getElementById('edit-panel-fields').innerHTML = buildEditFields(el);
+  }
+
+  document.getElementById('close-edit-panel').addEventListener('click', () => {
+    document.getElementById('edit-panel').style.display = 'none';
+    selectedId = null;
+    document.querySelectorAll('.page-element').forEach(e => e.classList.remove('selected'));
+  });
+
+  document.getElementById('apply-edit-btn').addEventListener('click', () => {
+    if (!selectedId) return;
+    const el = elements.find(e => e.id === selectedId);
+    if (!el) return;
+    readEditFields(el);
+    renderCanvas();
+    // keep selection
+    document.querySelector(`.page-element[data-id="${selectedId}"]`)?.classList.add('selected');
+  });
+
+  function buildEditFields(el) {
+    const d = el.data;
+    switch (el.type) {
+      case 'heading':
+        return field('text', 'f-text', 'Heading Text', escAttr(d.text||'')) +
+          selectField('f-level', 'Heading Level', ['h1','h2','h3','h4'], ['H1 — Page Title','H2 — Section','H3 — Sub-section','H4 — Small'], d.level||'h2');
+
+      case 'text':
+        return textareaField('f-content', 'Paragraph Text', d.content||'', 120);
+
+      case 'image':
+        return field('url', 'f-url', 'Image URL', escAttr(d.url||'')) +
+          field('text', 'f-alt', 'Alt Text (accessibility)', escAttr(d.alt||'')) +
+          field('text', 'f-caption', 'Caption (optional)', escAttr(d.caption||''));
+
+      case 'video':
+        return field('url', 'f-url', 'Video URL (YouTube or Vimeo)', escAttr(d.url||'')) +
+          `<div style="font-size:0.72rem; color:var(--admin-text-dim); margin-top:-0.4rem;">Paste a standard YouTube/Vimeo link — it will be converted to an embed automatically.</div>`;
+
+      case 'button':
+        return field('text', 'f-label', 'Button Label', escAttr(d.label||'')) +
+          field('url', 'f-url', 'Link URL', escAttr(d.url||'#')) +
+          selectField('f-style', 'Style', ['primary','secondary','ghost'], ['Primary (Gold fill)','Secondary (Gold outline)','Ghost (Subtle)'], d.style||'primary') +
+          selectField('f-align', 'Alignment', ['left','center','right'], ['Left','Center','Right'], d.align||'left');
+
+      case 'columns':
+        return selectField('f-count', 'Number of Columns', ['2','3','4'], ['2 Columns','3 Columns','4 Columns'], String(d.count||2)) +
+          buildColumnItemFields(d);
+
+      case 'divider':
+        return selectField('f-style', 'Line Style', ['solid','dashed','dotted'], ['Solid','Dashed','Dotted'], d.style||'solid');
+
+      case 'spacer':
+        return field('number', 'f-height', 'Height (px)', d.height||40);
+
+      case 'html':
+        return textareaField('f-code', 'HTML / Embed Code', d.code||'', 160) +
+          `<div style="font-size:0.72rem; color:var(--admin-text-dim); margin-top:-0.4rem;">Paste raw HTML, iframe embeds, or script tags. The code renders as-is on the live page.</div>`;
+
+      default: return '';
+    }
+  }
+
+  function buildColumnItemFields(d) {
+    const count = parseInt(d.count) || 2;
+    const items = Array.isArray(d.items) ? d.items : Array(count).fill('');
+    let html = '';
+    for (let i = 0; i < count; i++) {
+      html += textareaField(`f-col-${i}`, `Column ${i+1} Content`, items[i] || '', 60);
+    }
+    return html;
+  }
+
+  function field(type, id, label, value='') {
+    return `<div class="edit-field"><label>${label}</label><input type="${type}" id="${id}" value="${value}"></div>`;
+  }
+
+  function textareaField(id, label, value='', height=80) {
+    return `<div class="edit-field"><label>${label}</label><textarea id="${id}" style="min-height:${height}px;">${escHtml(value)}</textarea></div>`;
+  }
+
+  function selectField(id, label, values, labels, selected) {
+    const opts = values.map((v,i) => `<option value="${v}"${v===selected?' selected':''}>${labels[i]}</option>`).join('');
+    return `<div class="edit-field"><label>${label}</label><select id="${id}">${opts}</select></div>`;
+  }
+
+  function readEditFields(el) {
+    const g = (id) => { const el = document.getElementById(id); return el ? el.value : undefined; };
+    switch (el.type) {
+      case 'heading':
+        el.data.text = g('f-text') || 'Heading';
+        el.data.level = g('f-level') || 'h2';
+        break;
+      case 'text':
+        el.data.content = g('f-content') || '';
+        break;
+      case 'image':
+        el.data.url = g('f-url') || '';
+        el.data.alt = g('f-alt') || '';
+        el.data.caption = g('f-caption') || '';
+        break;
+      case 'video':
+        el.data.url = g('f-url') || '';
+        break;
+      case 'button':
+        el.data.label = g('f-label') || 'Button';
+        el.data.url = g('f-url') || '#';
+        el.data.style = g('f-style') || 'primary';
+        el.data.align = g('f-align') || 'left';
+        break;
+      case 'columns': {
+        const count = parseInt(g('f-count')) || 2;
+        el.data.count = count;
+        el.data.items = [];
+        for (let i = 0; i < count; i++) el.data.items.push(g(`f-col-${i}`) || '');
+        break;
+      }
+      case 'divider':
+        el.data.style = g('f-style') || 'solid';
+        break;
+      case 'spacer':
+        el.data.height = parseInt(g('f-height')) || 40;
+        break;
+      case 'html':
+        el.data.code = g('f-code') || '';
+        break;
+    }
+  }
+
+  // ── Delete / Move ─────────────────────────────────────────────────────────
+  function deleteElement(id) {
+    if (!confirm('Remove this element?')) return;
+    elements = elements.filter(e => e.id !== id);
+    if (selectedId === id) {
+      selectedId = null;
+      document.getElementById('edit-panel').style.display = 'none';
+    }
+    renderCanvas();
+  }
+
+  function moveElement(id, dir) {
+    const idx = elements.findIndex(e => e.id === id);
+    if (idx < 0) return;
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= elements.length) return;
+    [elements[idx], elements[newIdx]] = [elements[newIdx], elements[idx]];
+    renderCanvas();
+  }
+
+  // ── Save ──────────────────────────────────────────────────────────────────
+  async function savePage(status) {
+    const title = document.getElementById('field-title').value.trim();
+    const slug = document.getElementById('field-slug').value.trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '').toLowerCase();
+
+    if (!title) { alert('Please enter a page title.'); return; }
+    if (!slug)  { alert('Please enter a URL slug.'); return; }
+
+    const saveStatus = document.getElementById('save-status');
+    saveStatus.textContent = 'Saving…';
+
+    const payload = { title, slug, status, content: elements, updated_at: new Date().toISOString() };
+
+    let error;
+    if (pageId) {
+      ({ error } = await supabase.from('pages').update(payload).eq('id', pageId));
+    } else {
+      const { data, error: err } = await supabase.from('pages').insert({ ...payload, created_at: new Date().toISOString() }).select('id').single();
+      error = err;
+      if (!error && data) {
+        pageId = data.id;
+        history.replaceState(null, '', `?id=${pageId}`);
+      }
+    }
+
+    if (error) {
+      saveStatus.textContent = 'Error: ' + error.message;
+      saveStatus.style.color = 'var(--admin-danger)';
+    } else {
+      saveStatus.textContent = status === 'published' ? '✓ Published' : '✓ Draft saved';
+      saveStatus.style.color = 'var(--admin-success)';
+      setTimeout(() => { saveStatus.textContent = ''; }, 3000);
+      document.getElementById('field-status').value = status;
+      document.getElementById('breadcrumb-name').textContent = title;
+    }
+  }
+
+  document.getElementById('save-draft-btn').addEventListener('click', () => savePage('draft'));
+  document.getElementById('publish-btn').addEventListener('click', () => savePage('published'));
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function toEmbedUrl(url) {
+    if (!url) return '';
+    // YouTube
+    const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+    // YouTube shorts
+    const yts = url.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/);
+    if (yts) return `https://www.youtube.com/embed/${yts[1]}`;
+    // Vimeo
+    const vi = url.match(/vimeo\.com\/(\d+)/);
+    if (vi) return `https://player.vimeo.com/video/${vi[1]}`;
+    // Already an embed URL
+    if (url.includes('youtube.com/embed') || url.includes('player.vimeo.com')) return url;
+    return url;
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function escAttr(str) {
+    return String(str).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  renderCanvas();
+</script>
+</body>
+</html>

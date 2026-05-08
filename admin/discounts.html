@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discount Codes — eebecco Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .admin-card { background: var(--admin-bg); border: 1px solid var(--admin-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .admin-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--admin-border); }
+    .admin-card-header h3 { font-size: 1rem; font-weight: 600; color: var(--admin-text); margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th { text-align: left; padding: 0.75rem; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--admin-text-dim); border-bottom: 1px solid var(--admin-border); }
+    .admin-table td { padding: 0.85rem 0.75rem; font-size: 0.85rem; color: var(--admin-text); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+    .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .code-cell { font-family: monospace; font-weight: 600; color: var(--admin-gold); font-size: 0.9rem; }
+    .type-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .type-badge.percentage { background: rgba(201,147,58,0.15); color: var(--admin-gold); }
+    .type-badge.fixed { background: rgba(109,168,94,0.15); color: #6DA85E; }
+    .status-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .status-badge.active { background: rgba(76,175,125,0.15); color: #6DA85E; }
+    .status-badge.inactive { background: rgba(201,64,64,0.15); color: #e74c3c; }
+    .status-badge.expired { background: rgba(200,200,200,0.1); color: var(--admin-text-dim); }
+    .usage-bar { display: flex; align-items: center; gap: 0.5rem; }
+    .usage-bar-inner { flex: 1; height: 6px; background: var(--admin-border); border-radius: 3px; overflow: hidden; max-width: 80px; }
+    .usage-bar-fill { height: 100%; background: var(--admin-gold); transition: width 0.3s; }
+    .btn-edit { color: var(--admin-gold); font-size: 0.75rem; padding: 0.3rem 0.75rem; border: 1px solid var(--admin-gold); border-radius: 6px; transition: all 0.2s; cursor: pointer; background: none; }
+    .btn-edit:hover { background: rgba(201,147,58,0.15); }
+    .btn-delete { color: #e74c3c; font-size: 0.75rem; padding: 0.3rem 0.75rem; border: 1px solid rgba(201,64,64,0.3); border-radius: 6px; transition: all 0.2s; cursor: pointer; background: none; margin-left: 0.4rem; }
+    .btn-delete:hover { background: rgba(201,64,64,0.15); }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--admin-bg); border: 1px solid var(--admin-border); border-radius: 12px; padding: 2rem; width: 480px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .modal-header h2 { font-size: 1.1rem; font-weight: 600; color: var(--admin-text); margin: 0; }
+    .modal-close { background: none; border: none; color: var(--admin-text-dim); font-size: 1.5rem; cursor: pointer; line-height: 1; }
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--admin-text-dim); margin-bottom: 0.4rem; }
+    .form-input, .form-select { width: 100%; padding: 0.65rem 0.85rem; background: var(--admin-dark); border: 1px solid var(--admin-border); color: var(--admin-text); font-size: 0.85rem; border-radius: 8px; }
+    .form-input:focus, .form-select:focus { outline: none; border-color: var(--admin-gold); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+    .btn-primary { background: var(--admin-gold); color: var(--deep-ebony); border: none; padding: 0.65rem 1.25rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary { background: transparent; color: var(--admin-text); border: 1px solid var(--admin-border); padding: 0.65rem 1.25rem; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+    .btn-secondary:hover { background: rgba(255,255,255,0.05); }
+    .empty-msg { text-align: center; padding: 3rem; color: var(--admin-text-dim); }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <a href="index.html" class="admin-sidebar-logo">
+        <img src="../logo.jpg" alt="eebecco" onerror="this.style.display='none'">
+        <div><span>eebecco</span><small>Admin Panel</small></div>
+      </a>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-section">Main</div>
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+
+      <div class="admin-nav-section">Catalog</div>
+      <a href="products.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        Products
+      </a>
+      <a href="stock.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+        Stock
+      </a>
+
+      <div class="admin-nav-section">Marketing</div>
+      <a href="discounts.html" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Discount Codes
+      </a>
+
+      <div class="admin-nav-section">Content</div>
+      <a href="pages.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Pages
+      </a>
+      <a href="contacts.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Contact Inquiries
+      </a>
+
+      <div class="admin-nav-section">Settings</div>
+      <a href="admins.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Admin Users
+      </a>
+      <a href="#" id="logout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </a>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div><div class="user-name" id="user-name">Admin</div><div class="user-email" id="user-email">—</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h2>Discount Codes</h2>
+        <div class="breadcrumb"><a href="index.html">Admin</a> / Discount Codes</div>
+      </div>
+      <button class="btn btn-primary btn-sm" id="add-discount-btn">+ New Code</button>
+    </div>
+
+    <div id="stats-row" class="stats-row" style="margin-bottom:1.5rem;">
+      <div class="stat-card">
+        <div class="stat-label">Total Codes</div>
+        <div class="stat-value" id="stat-total">—</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-label">Active</div>
+        <div class="stat-value" id="stat-active">—</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-label">Used</div>
+        <div class="stat-value" id="stat-used">—</div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3>All Discount Codes</h3>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Min Order</th>
+            <th>Usage</th>
+            <th>Status</th>
+            <th>Expires</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="discounts-table-body">
+          <tr><td colspan="8" style="text-align:center; color: var(--admin-text-dim); padding: 2rem;">Loading...</td></tr>
+        </tbody>
+      </table>
+      <div id="empty-state" class="empty-msg" style="display:none;">
+        <p>No discount codes yet.</p>
+        <button class="btn btn-primary" onclick="openModal()" style="margin-top:1rem;">Create First Code</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="discount-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Create Discount Code</h2>
+      <button class="modal-close" id="modal-close-btn">&times;</button>
+    </div>
+    <form id="discount-form">
+      <input type="hidden" id="discount-id">
+      <div class="form-group">
+        <label class="form-label">Code</label>
+        <input type="text" id="discount-code" class="form-input" placeholder="e.g. MATCHA10" required style="text-transform: uppercase;">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select id="discount-type" class="form-select" required>
+            <option value="percentage">Percentage (%)</option>
+            <option value="fixed">Fixed Amount ($)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Value</label>
+          <input type="number" id="discount-value" class="form-input" placeholder="10" min="0" step="0.01" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Min Order (S$)</label>
+          <input type="number" id="discount-min-order" class="form-input" placeholder="0" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Discount (S$)</label>
+          <input type="number" id="discount-max-discount" class="form-input" placeholder="No limit" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Usage Limit</label>
+          <input type="number" id="discount-usage-limit" class="form-input" placeholder="No limit" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Active</label>
+          <select id="discount-active" class="form-select">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Start Date</label>
+          <input type="date" id="discount-starts-at" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expiry Date</label>
+          <input type="date" id="discount-expires-at" class="form-input">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description (optional)</label>
+        <input type="text" id="discount-description" class="form-input" placeholder="e.g. 10% off for new customers">
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-primary" id="save-discount-btn">Save Code</button>
+        <button type="button" class="btn-secondary" id="cancel-modal-btn">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="loading-overlay" class="loading-overlay" style="display:none;">
+  <div class="spinner"></div>
+  <span>Loading...</span>
+</div>
+
+<script type="module">
+  import supabase from '../js/supabase.js';
+  import { getAllDiscountCodes, createDiscountCode, updateDiscountCode, deleteDiscountCode } from '../js/discount-codes.js';
+
+  const uid = sessionStorage.getItem('admin_uid');
+  if (!uid) { window.location.href = 'admin-login.html'; }
+
+  document.getElementById('user-name').textContent = sessionStorage.getItem('admin_email')?.split('@')[0] || 'Admin';
+  document.getElementById('user-email').textContent = sessionStorage.getItem('admin_email') || '—';
+  document.getElementById('user-avatar').textContent = (sessionStorage.getItem('admin_email') || 'A')[0].toUpperCase();
+
+  document.getElementById('logout-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    sessionStorage.clear();
+    window.location.href = 'admin-login.html';
+  });
+
+  const modal = document.getElementById('discount-modal');
+  const form = document.getElementById('discount-form');
+
+  function openModal(id = null, data = null) {
+    document.getElementById('discount-id').value = '';
+    document.getElementById('modal-title').textContent = 'Create Discount Code';
+    form.reset();
+
+    if (data) {
+      document.getElementById('discount-id').value = id;
+      document.getElementById('modal-title').textContent = 'Edit Discount Code';
+      document.getElementById('discount-code').value = data.code || '';
+      document.getElementById('discount-type').value = data.discount_type || 'percentage';
+      document.getElementById('discount-value').value = data.discount_value || '';
+      document.getElementById('discount-min-order').value = data.min_order_cents ? (data.min_order_cents / 100) : '';
+      document.getElementById('discount-max-discount').value = data.max_discount_cents ? (data.max_discount_cents / 100) : '';
+      document.getElementById('discount-usage-limit').value = data.usage_limit || '';
+      document.getElementById('discount-active').value = data.is_active ? 'true' : 'false';
+      if (data.starts_at) document.getElementById('discount-starts-at').value = data.starts_at.split('T')[0];
+      if (data.expires_at) document.getElementById('discount-expires-at').value = data.expires_at.split('T')[0];
+      document.getElementById('discount-description').value = data.description || '';
+    }
+
+    modal.classList.add('open');
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+  }
+
+  document.getElementById('add-discount-btn').addEventListener('click', () => openModal());
+  document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+  document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('discount-id').value;
+    const codeData = {
+      code: document.getElementById('discount-code').value,
+      discount_type: document.getElementById('discount-type').value,
+      discount_value: parseFloat(document.getElementById('discount-value').value),
+      min_order_cents: parseFloat(document.getElementById('discount-min-order').value) || null,
+      max_discount_cents: parseFloat(document.getElementById('discount-max-discount').value) || null,
+      usage_limit: parseInt(document.getElementById('discount-usage-limit').value) || null,
+      is_active: document.getElementById('discount-active').value === 'true',
+      starts_at: document.getElementById('discount-starts-at').value || null,
+      expires_at: document.getElementById('discount-expires-at').value || null,
+      description: document.getElementById('discount-description').value || null,
+    };
+
+    try {
+      if (id) {
+        await updateDiscountCode(id, codeData);
+      } else {
+        await createDiscountCode(codeData);
+      }
+      closeModal();
+      loadDiscounts();
+    } catch (err) {
+      alert('Error saving discount code: ' + err.message);
+    }
+  });
+
+  async function loadDiscounts() {
+    let codes;
+    try {
+      codes = await getAllDiscountCodes();
+    } catch (err) {
+      document.getElementById('discounts-table-body').innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--admin-text-dim); padding: 2rem;">Failed to load discount codes.</td></tr>';
+      return;
+    }
+
+    const total = codes.length;
+    const active = codes.filter(c => c.is_active).length;
+    const used = codes.reduce((sum, c) => sum + (c.used_count || 0), 0);
+
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-active').textContent = active;
+    document.getElementById('stat-used').textContent = used;
+
+    if (codes.length === 0) {
+      document.getElementById('discounts-table-body').innerHTML = '';
+      document.getElementById('empty-state').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('empty-state').style.display = 'none';
+
+    document.getElementById('discounts-table-body').innerHTML = codes.map(code => {
+      const statusClass = !code.is_active ? 'inactive' : (code.expires_at && new Date(code.expires_at) < new Date() ? 'expired' : 'active');
+      const statusLabel = !code.is_active ? 'Inactive' : (code.expires_at && new Date(code.expires_at) < new Date() ? 'Expired' : 'Active');
+      const usagePercent = code.usage_limit ? Math.min(100, ((code.used_count || 0) / code.usage_limit) * 100) : 0;
+      const minOrder = code.min_order_cents ? `S$${(code.min_order_cents / 100).toFixed(2)}` : 'None';
+      const expiry = code.expires_at ? new Date(code.expires_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Never';
+
+      return `<tr>
+        <td><span class="code-cell">${code.code}</span></td>
+        <td><span class="type-badge ${code.discount_type}">${code.discount_type === 'percentage' ? '%' : '$'}</span></td>
+        <td>${code.discount_type === 'percentage' ? code.discount_value + '%' : 'S$' + code.discount_value.toFixed(2)}</td>
+        <td style="color:var(--admin-text-dim);">${minOrder}</td>
+        <td>
+          <div class="usage-bar">
+            <div class="usage-bar-inner"><div class="usage-bar-fill" style="width:${usagePercent}%"></div></div>
+            <span style="font-size:0.75rem; color:var(--admin-text-dim);">${code.used_count || 0}${code.usage_limit ? '/' + code.usage_limit : ''}</span>
+          </div>
+        </td>
+        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+        <td style="color:var(--admin-text-dim);">${expiry}</td>
+        <td>
+          <button class="btn-edit" data-id="${code.id}" data-code='${JSON.stringify(code).replace(/'/g, "\\'")}'>Edit</button>
+          <button class="btn-delete" data-id="${code.id}" data-name="${code.code}">Delete</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const data = JSON.parse(btn.dataset.code.replace(/\\'/g, "'"));
+        openModal(btn.dataset.id, data);
+      });
+    });
+
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm(`Delete discount code "${btn.dataset.name}"? This cannot be undone.`)) return;
+        try {
+          await deleteDiscountCode(btn.dataset.id);
+          loadDiscounts();
+        } catch (err) {
+          alert('Error deleting code: ' + err.message);
+        }
+      });
+    });
+  }
+
+  loadDiscounts();
+</script>
+</body>
+</html>
