@@ -2,6 +2,7 @@
   "name": "eebecco",
   "version": "1.0.0",
   "dependencies": {
-    "stripe": "^16.0.0"
+    "@supabase/supabase-js": "^2.105.3",
+    "stripe": "^16.12.0"
   }
 }
