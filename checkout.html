@@ -312,6 +312,7 @@
     import { validateDiscountCodeClient } from './js/discount-codes.js';
     import { getAvailableShippingOptions, calculateShippingCost, formatShippingRate, isFreeShippingAvailable, SHIPPING_OPTIONS } from './js/delivery.js';
     import { getSession } from './js/auth.js';
+    import { getShippingAddress, saveShippingAddress } from './js/account.js';
 
     const CART_KEY = 'eebecco_cart';
 
@@ -499,6 +500,15 @@
         return;
       }
 
+      const { data: { session } } = await getSession();
+      if (session?.user) {
+        const addressData = {
+          firstname, lastname, phone, country,
+          line1: address1, line2: address2, postal, city
+        };
+        saveShippingAddress(session.user.id, addressData).catch(() => {});
+      }
+
       const totalCents = subtotalCents - discountCents + shippingCostCents;
       const shippingOption = SHIPPING_OPTIONS[selectedShipping];
 
@@ -561,6 +571,18 @@
 
       if (session?.user) {
         document.getElementById('checkout-email').value = session.user.email || '';
+
+        const savedAddress = await getShippingAddress(session.user.id);
+        if (savedAddress) {
+          document.getElementById('checkout-firstname').value = savedAddress.firstname || '';
+          document.getElementById('checkout-lastname').value = savedAddress.lastname || '';
+          document.getElementById('checkout-phone').value = savedAddress.phone || '';
+          document.getElementById('checkout-country').value = savedAddress.country || 'SG';
+          document.getElementById('checkout-address1').value = savedAddress.line1 || '';
+          document.getElementById('checkout-address2').value = savedAddress.line2 || '';
+          document.getElementById('checkout-postal').value = savedAddress.postal || '';
+          document.getElementById('checkout-city').value = savedAddress.city || '';
+        }
       }
 
       if (cart.length === 0) {

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipping Label — eebecco</title>
+  <style>
+    @page { size: 100mm 150mm; margin: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 100mm; height: 150mm; font-family: Arial, sans-serif; font-size: 9px; background: #fff; color: #000; }
+    .label-container { width: 100mm; height: 150mm; padding: 4mm; display: flex; flex-direction: column; }
+    .label-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000; padding-bottom: 2mm; margin-bottom: 2mm; }
+    .from-section { font-size: 7px; line-height: 1.3; }
+    .from-label { font-weight: bold; font-size: 6px; text-transform: uppercase; color: #666; }
+    .from-name { font-weight: bold; font-size: 9px; }
+    .from-address { font-size: 7px; }
+    .logo-section { text-align: right; }
+    .logo-text { font-size: 12px; font-weight: bold; letter-spacing: 0.1em; }
+    .logo-sub { font-size: 6px; color: #666; }
+    .barcode-section { text-align: center; padding: 2mm 0; border-bottom: 1px solid #000; margin-bottom: 2mm; }
+    .tracking-number { font-family: monospace; font-size: 14px; font-weight: bold; letter-spacing: 0.15em; }
+    .barcode-visual { font-family: 'Libre Barcode 128', monospace; font-size: 36px; margin-top: 1mm; }
+    .to-section { flex: 1; display: flex; flex-direction: column; }
+    .to-label { font-weight: bold; font-size: 6px; text-transform: uppercase; color: #666; margin-bottom: 1mm; }
+    .to-name { font-size: 11px; font-weight: bold; margin-bottom: 1mm; }
+    .to-address { font-size: 8px; line-height: 1.3; }
+    .to-postal { font-size: 10px; font-weight: bold; margin-top: 1mm; }
+    .to-country { font-size: 8px; color: #666; }
+    .service-section { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 2mm; border-top: 1px solid #000; }
+    .service-type { font-size: 8px; font-weight: bold; text-transform: uppercase; }
+    .service-name { font-size: 7px; color: #666; }
+    .order-ref { font-size: 7px; text-align: right; }
+    .order-label { font-size: 6px; color: #666; }
+    .order-number { font-family: monospace; font-size: 8px; }
+    @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+  </style>
+</head>
+<body>
+  <div class="label-container" id="label-content">
+    Loading label data...
+  </div>
+
+  <script type="module">
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('order');
+
+    if (!orderId) {
+      document.getElementById('label-content').innerHTML = '<div style="padding:20px; text-align:center;">No order specified</div>';
+    } else {
+      const response = await fetch(`/.netlify/functions/get-order?order_id=${orderId}`);
+      const data = await response.json();
+
+      if (data.error || !data.order) {
+        document.getElementById('label-content').innerHTML = '<div style="padding:20px; text-align:center;">Order not found</div>';
+      } else {
+        const order = data.order;
+        const shipData = order.shipping_data ? (typeof order.shipping_data === 'string' ? JSON.parse(order.shipping_data) : order.shipping_data) : {};
+
+        document.getElementById('label-content').innerHTML = `
+          <div class="label-header">
+            <div class="from-section">
+              <div class="from-label">From:</div>
+              <div class="from-name">EEBECCO</div>
+              <div class="from-address">123 Main Street<br>Singapore 123456<br>Singapore</div>
+            </div>
+            <div class="logo-section">
+              <div class="logo-text">EEBECCO</div>
+              <div class="logo-sub">Premium Ceremonial Matcha</div>
+            </div>
+          </div>
+
+          <div class="barcode-section">
+            <div class="tracking-number">${order.tracking_number || 'N/A'}</div>
+            <div class="barcode-visual">${generateBarcode(order.tracking_number || '000000000000')}</div>
+          </div>
+
+          <div class="to-section">
+            <div class="to-label">To:</div>
+            <div class="to-name">${order.customer_name || 'N/A'}</div>
+            <div class="to-address">${shipData.address?.line1 || ''}${shipData.address?.line2 ? '<br>' + shipData.address.line2 : ''}</div>
+            <div class="to-postal">${shipData.address?.postal || ''} ${shipData.address?.city || ''}</div>
+            <div class="to-country">${shipData.address?.country || ''}</div>
+          </div>
+
+          <div class="service-section">
+            <div>
+              <div class="service-type">${shipData.carrier || 'Standard'}</div>
+              <div class="service-name">${shipData.method || 'Delivery'}</div>
+            </div>
+            <div class="order-ref">
+              <div class="order-label">Order Ref:</div>
+              <div class="order-number">#${order.id.substring(0, 8).toUpperCase()}</div>
+            </div>
+          </div>
+        `;
+
+        window.onload = () => { window.print(); };
+      }
+    }
+
+    function generateBarcode(text) {
+      return text.replace(/./g, c => String.fromCharCode(104 + (c.charCodeAt(0) % 42)));
+    }
+  </script>
+</body>
+</html>

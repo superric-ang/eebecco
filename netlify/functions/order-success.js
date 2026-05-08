@@ -14,6 +14,10 @@ exports.handler = async (event) => {
   try {
     const { session_id } = JSON.parse(event.body);
 
+    if (!session_id) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Session ID required' }) };
+    }
+
     const session = await stripe.checkout.sessions.retrieve(session_id, {
       expand: ['line_items', 'customer']
     });
@@ -22,8 +26,18 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: 'Payment not completed' }) };
     }
 
+    const existingOrder = await supabase
+      .from('orders')
+      .select('id')
+      .eq('stripe_session_id', session_id)
+      .single();
+
+    if (existingOrder.data) {
+      return { statusCode: 200, body: JSON.stringify({ success: true, order_id: existingOrder.data.id, message: 'Order already exists' }) };
+    }
+
     const userId = session.metadata?.user_id || null;
-    const customerEmail = session.customer_email || session.customer?.email;
+    const customerEmail = session.customer_email || session.customer?.email || '';
     const customerName = session.metadata?.customer_name || '';
     const shippingCarrier = session.metadata?.shipping_carrier || '';
     const shippingMethod = session.metadata?.shipping_method || '';
@@ -38,7 +52,7 @@ exports.handler = async (event) => {
     const totalCents = subtotal - discountCents + shippingCostCents;
 
     const orderItems = session.line_items.data.map(item => ({
-      product_name: item.description || item.price_data?.product_data?.name || 'Unknown Product',
+      product_name: item.description || 'Unknown Product',
       quantity: item.quantity || 1,
       unit_price_cents: item.amount_unit || 0,
     }));
@@ -79,7 +93,7 @@ exports.handler = async (event) => {
 
     if (orderError) {
       console.error('Error creating order:', orderError);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to save order' }) };
+      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to save order: ' + orderError.message }) };
     }
 
     if (discountCode) {

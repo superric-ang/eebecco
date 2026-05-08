@@ -3,12 +3,23 @@ import supabase from './supabase.js';
 export async function getPurchaseHistory(userId) {
   const { data, error } = await supabase
     .from('orders')
-    .select('*, order_items(*)')
+    .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
   return data || [];
+}
+
+export async function getOrder(orderId) {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', orderId)
+    .single();
+
+  if (error) throw error;
+  return data;
 }
 
 export async function getMailingListStatus(userId) {
@@ -41,12 +52,56 @@ export async function toggleMailingList(userId, optIn) {
   if (error) throw error;
 }
 
-export async function getOrderItems(orderId) {
+export async function getShippingAddress(userId) {
   const { data, error } = await supabase
-    .from('order_items')
+    .from('profiles')
+    .select('shipping_address')
+    .eq('id', userId)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error;
+  return data?.shipping_address || null;
+}
+
+export async function saveShippingAddress(userId, address) {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ shipping_address: address })
+    .eq('id', userId);
+
+  if (error) throw error;
+}
+
+export async function updateOrderStatus(orderId, status, trackingNumber = null, carrier = null) {
+  const updates = { status };
+  if (trackingNumber) updates.tracking_number = trackingNumber;
+  if (carrier) updates.carrier = carrier;
+
+  const { error } = await supabase
+    .from('orders')
+    .update(updates)
+    .eq('id', orderId);
+
+  if (error) throw error;
+}
+
+export async function getAllOrders(limit = 50) {
+  const { data, error } = await supabase
+    .from('orders')
     .select('*')
-    .eq('order_id', orderId)
-    .order('id', { ascending: true });
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getPendingOrders() {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('status', 'paid')
+    .order('created_at', { ascending: true });
 
   if (error) throw error;
   return data || [];
@@ -68,7 +123,8 @@ export function formatPrice(cents) {
 export function getStatusLabel(status) {
   const labels = {
     pending: 'Pending',
-    paid: 'Paid',
+    paid: 'Paid - Awaiting Shipment',
+    confirmed: 'Confirmed - Preparing',
     shipped: 'Shipped',
     delivered: 'Delivered',
     cancelled: 'Cancelled',

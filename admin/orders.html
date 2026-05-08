@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — eebecco Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .admin-card { background: var(--admin-bg); border: 1px solid var(--admin-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .admin-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--admin-border); }
+    .admin-card-header h3 { font-size: 1rem; font-weight: 600; color: var(--admin-text); margin: 0; }
+    .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .filter-btn { padding: 0.5rem 1rem; border: 1px solid var(--admin-border); background: transparent; color: var(--admin-text); border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+    .filter-btn:hover, .filter-btn.active { background: var(--admin-gold); color: var(--deep-ebony); border-color: var(--admin-gold); }
+    .order-table { width: 100%; border-collapse: collapse; }
+    .order-table th { text-align: left; padding: 0.75rem; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--admin-text-dim); border-bottom: 1px solid var(--admin-border); }
+    .order-table td { padding: 0.85rem 0.75rem; font-size: 0.85rem; color: var(--admin-text); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+    .order-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .order-id-cell { font-family: monospace; font-weight: 600; color: var(--admin-gold); }
+    .status-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+    .status-badge.pending { background: rgba(201,147,58,0.15); color: var(--admin-gold); }
+    .status-badge.paid { background: rgba(74,122,207,0.15); color: #6B8AD4; }
+    .status-badge.confirmed { background: rgba(109,168,94,0.15); color: #6DA85E; }
+    .status-badge.shipped { background: rgba(74,174,207,0.15); color: #6BAED4; }
+    .status-badge.delivered { background: rgba(76,175,125,0.15); color: #6DA85E; }
+    .status-badge.cancelled { background: rgba(201,64,64,0.15); color: #e74c3c; }
+    .btn-sm { padding: 0.4rem 0.85rem; font-size: 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; border: none; }
+    .btn-confirm { background: var(--admin-gold); color: var(--deep-ebony); }
+    .btn-confirm:hover { opacity: 0.85; }
+    .btn-ship { background: #6DA85E; color: white; }
+    .btn-ship:hover { opacity: 0.85; }
+    .btn-view { background: transparent; border: 1px solid var(--admin-border); color: var(--admin-text); }
+    .btn-view:hover { border-color: var(--admin-gold); color: var(--admin-gold); }
+    .btn-print { background: transparent; border: 1px solid var(--admin-border); color: var(--admin-text); }
+    .btn-print:hover { border-color: var(--admin-gold); color: var(--admin-gold); }
+    .empty-state { text-align: center; padding: 3rem; color: var(--admin-text-dim); }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--admin-bg); border: 1px solid var(--admin-border); border-radius: 12px; padding: 1rem; }
+    .stat-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--admin-text-dim); }
+    .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--admin-text); margin-top: 0.25rem; }
+    .order-detail-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 2rem; }
+    .order-detail-modal.open { display: flex; }
+    .order-detail-content { background: var(--admin-bg); border: 1px solid var(--admin-border); border-radius: 12px; padding: 2rem; width: 700px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--admin-text-dim); font-size: 1.5rem; cursor: pointer; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .detail-section { margin-bottom: 1.5rem; }
+    .detail-section-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--admin-gold); margin-bottom: 0.75rem; }
+    .detail-item { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .detail-label { color: var(--admin-text-dim); font-size: 0.8rem; }
+    .detail-value { color: var(--admin-text); font-size: 0.85rem; font-weight: 500; }
+    .shipping-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--admin-border); }
+    .api-key-notice { background: rgba(201,147,58,0.1); border: 1px solid var(--admin-gold); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.82rem; color: var(--admin-text); }
+    .api-key-notice strong { color: var(--admin-gold); }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <a href="index.html" class="admin-sidebar-logo">
+        <img src="../logo.jpg" alt="eebecco" onerror="this.style.display='none'">
+        <div><span>eebecco</span><small>Admin Panel</small></div>
+      </a>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-section">Main</div>
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="orders.html" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/></svg>
+        Orders
+      </a>
+
+      <div class="admin-nav-section">Catalog</div>
+      <a href="products.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        Products
+      </a>
+      <a href="stock.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+        Stock
+      </a>
+
+      <div class="admin-nav-section">Marketing</div>
+      <a href="discounts.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Discount Codes
+      </a>
+
+      <div class="admin-nav-section">Settings</div>
+      <a href="admins.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Admin Users
+      </a>
+      <a href="#" id="logout-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h2>Orders Management</h2>
+        <div class="breadcrumb"><a href="index.html">Admin</a> / Orders</div>
+      </div>
+      <button class="btn btn-primary btn-sm" id="refresh-btn">Refresh</button>
+    </div>
+
+    <div class="api-key-notice" id="api-key-notice">
+      <strong>API Keys Required for Shipping:</strong> Configure SPX Express and SingPost API keys in Settings to enable automated shipping labels.
+    </div>
+
+    <div id="stats-row" class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Orders</div>
+        <div class="stat-value" id="stat-total">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Shipment</div>
+        <div class="stat-value" id="stat-pending">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Shipped</div>
+        <div class="stat-value" id="stat-shipped">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Revenue (SGD)</div>
+        <div class="stat-value" id="stat-revenue">0</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">All Orders</button>
+      <button class="filter-btn" data-filter="paid">Paid - Pending</button>
+      <button class="filter-btn" data-filter="confirmed">Confirmed</button>
+      <button class="filter-btn" data-filter="shipped">Shipped</button>
+      <button class="filter-btn" data-filter="delivered">Delivered</button>
+    </div>
+
+    <div class="admin-card">
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Tracking</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="orders-tbody">
+          <tr><td colspan="8" style="text-align:center; color: var(--admin-text-dim); padding: 2rem;">Loading orders...</td></tr>
+        </tbody>
+      </table>
+      <div id="empty-state" class="empty-state" style="display:none;">No orders found.</div>
+    </div>
+  </main>
+</div>
+
+<div id="order-detail-modal" class="order-detail-modal">
+  <div class="order-detail-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2 style="font-size:1.2rem; font-weight:600; color:var(--admin-text); margin-bottom:1.5rem;" id="modal-title">Order Details</h2>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script type="module">
+  import supabase from '../js/supabase.js';
+  import { getAllOrders, updateOrderStatus, formatOrderDate, formatPrice, getStatusLabel } from '../js/account.js';
+  import { createSPXShipment, createSingpostShipment, SHIPPING_OPTIONS } from '../js/delivery.js';
+
+  const uid = sessionStorage.getItem('admin_uid');
+  if (!uid) { window.location.href = 'admin-login.html'; }
+
+  let allOrders = [];
+
+  document.getElementById('logout-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    sessionStorage.clear();
+    window.location.href = 'admin-login.html';
+  });
+
+  async function loadOrders() {
+    try {
+      allOrders = await getAllOrders(100);
+      renderOrders(allOrders);
+      updateStats(allOrders);
+    } catch (err) {
+      document.getElementById('orders-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center; color:#e74c3c; padding:2rem;">Failed to load orders.</td></tr>';
+    }
+  }
+
+  function updateStats(orders) {
+    const total = orders.length;
+    const pending = orders.filter(o => o.status === 'paid').length;
+    const shipped = orders.filter(o => ['shipped', 'delivered'].includes(o.status)).length;
+    const revenue = orders.reduce((sum, o) => sum + (o.total_cents || 0), 0) / 100;
+
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-pending').textContent = pending;
+    document.getElementById('stat-shipped').textContent = shipped;
+    document.getElementById('stat-revenue').textContent = 'S$' + revenue.toFixed(0);
+  }
+
+  function renderOrders(orders) {
+    const tbody = document.getElementById('orders-tbody');
+    const emptyState = document.getElementById('empty-state');
+
+    if (orders.length === 0) {
+      tbody.innerHTML = '';
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+
+    tbody.innerHTML = orders.map(order => {
+      const items = Array.isArray(order.order_items) ? order.order_items : (typeof order.order_items === 'string' ? JSON.parse(order.order_items || '[]') : []);
+      const itemCount = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+      const shipData = order.shipping_data ? (typeof order.shipping_data === 'string' ? JSON.parse(order.shipping_data) : order.shipping_data) : {};
+
+      return `<tr>
+        <td><span class="order-id-cell">#${order.id.substring(0, 8).toUpperCase()}</span></td>
+        <td>
+          <div style="font-weight:500;">${order.customer_name || 'N/A'}</div>
+          <div style="font-size:0.75rem; color:var(--admin-text-dim);">${order.email || ''}</div>
+        </td>
+        <td style="color:var(--admin-text-dim); font-size:0.82rem;">${formatOrderDate(order.created_at)}</td>
+        <td style="font-size:0.85rem;">${itemCount} item${itemCount !== 1 ? 's' : ''}</td>
+        <td style="font-family:var(--font-display); font-weight:600; color:var(--admin-gold);">S$${((order.total_cents || 0) / 100).toFixed(2)}</td>
+        <td><span class="status-badge ${order.status}">${getStatusLabel(order.status)}</span></td>
+        <td style="font-size:0.8rem; color:var(--admin-text-dim);">${order.tracking_number || '—'}</td>
+        <td>
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+            <button class="btn-sm btn-view" onclick="viewOrder('${order.id}')">View</button>
+            ${order.status === 'paid' ? `<button class="btn-sm btn-confirm" onclick="confirmOrder('${order.id}')">Confirm</button>` : ''}
+            ${order.status === 'confirmed' ? `<button class="btn-sm btn-ship" onclick="shipOrder('${order.id}')">Ship</button>` : ''}
+            ${order.tracking_number ? `<button class="btn-sm btn-print" onclick="printLabel('${order.id}')">Label</button>` : ''}
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  window.viewOrder = async function(orderId) {
+    const order = allOrders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const items = Array.isArray(order.order_items) ? order.order_items : JSON.parse(order.order_items || '[]');
+    const shipData = order.shipping_data ? (typeof order.shipping_data === 'string' ? JSON.parse(order.shipping_data) : order.shipping_data) : {};
+
+    document.getElementById('modal-title').textContent = `Order #${order.id.substring(0, 8).toUpperCase()}`;
+    document.getElementById('modal-body').innerHTML = `
+      <div class="detail-grid">
+        <div>
+          <div class="detail-section">
+            <div class="detail-section-title">Customer</div>
+            <div class="detail-item"><span class="detail-label">Name</span><span class="detail-value">${order.customer_name || 'N/A'}</span></div>
+            <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value">${order.email || 'N/A'}</span></div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">Shipping Address</div>
+            <div class="detail-item"><span class="detail-label">Address</span><span class="detail-value">${shipData.address ? shipData.address.line1 + (shipData.address.line2 ? ', ' + shipData.address.line2 : '') : 'N/A'}</span></div>
+            <div class="detail-item"><span class="detail-label">City</span><span class="detail-value">${shipData.address?.city || 'N/A'}</span></div>
+            <div class="detail-item"><span class="detail-label">Postal</span><span class="detail-value">${shipData.address?.postal || 'N/A'}</span></div>
+            <div class="detail-item"><span class="detail-label">Country</span><span class="detail-value">${shipData.address?.country || 'N/A'}</span></div>
+            <div class="detail-item"><span class="detail-label">Phone</span><span class="detail-value">${shipData.recipient_phone || 'N/A'}</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="detail-section">
+            <div class="detail-section-title">Order Summary</div>
+            <div class="detail-item"><span class="detail-label">Date</span><span class="detail-value">${formatOrderDate(order.created_at)}</span></div>
+            <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value"><span class="status-badge ${order.status}">${getStatusLabel(order.status)}</span></span></div>
+            <div class="detail-item"><span class="detail-label">Carrier</span><span class="detail-value">${shipData.carrier || 'N/A'}</span></div>
+            <div class="detail-item"><span class="detail-label">Method</span><span class="detail-value">${shipData.method || 'N/A'}</span></div>
+            <div class="detail-item"><span class="detail-label">Tracking</span><span class="detail-value" style="font-family:monospace; color:var(--admin-gold);">${order.tracking_number || '—'}</span></div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">Items</div>
+            ${items.map(item => `<div class="detail-item"><span class="detail-label">${item.quantity}x ${item.product_name}</span><span class="detail-value">S$${((item.unit_price_cents || 0) * item.quantity / 100).toFixed(2)}</span></div>`).join('')}
+            <div class="detail-item" style="border-top:1px solid var(--admin-border); margin-top:0.5rem; padding-top:0.5rem;"><span class="detail-label">Subtotal</span><span class="detail-value">S$${((order.subtotal_cents || 0) / 100).toFixed(2)}</span></div>
+            <div class="detail-item"><span class="detail-label">Shipping</span><span class="detail-value">${order.shipping_cents === 0 ? 'FREE' : 'S$' + ((order.shipping_cents || 0) / 100).toFixed(2)}</span></div>
+            ${order.discount_cents > 0 ? `<div class="detail-item" style="color:#6DA85E;"><span class="detail-label">Discount</span><span class="detail-value">-S$${((order.discount_cents || 0) / 100).toFixed(2)}</span></div>` : ''}
+            <div class="detail-item" style="font-weight:700; font-size:1rem; border-top:1px solid var(--admin-border); margin-top:0.5rem; padding-top:0.5rem;"><span class="detail-label">Total</span><span class="detail-value" style="color:var(--admin-gold);">S$${((order.total_cents || 0) / 100).toFixed(2)}</span></div>
+          </div>
+        </div>
+      </div>
+      ${order.status === 'paid' || order.status === 'confirmed' ? `
+        <div class="shipping-actions">
+          ${order.status === 'paid' ? `<button class="btn-sm btn-confirm" onclick="confirmOrder('${order.id}'); closeModal();">Confirm Order</button>` : ''}
+          ${order.status === 'confirmed' ? `<button class="btn-sm btn-ship" onclick="shipOrder('${order.id}'); closeModal();">Ship & Create Label</button>` : ''}
+        </div>
+      ` : ''}
+    `;
+
+    document.getElementById('order-detail-modal').classList.add('open');
+  };
+
+  window.closeModal = function() {
+    document.getElementById('order-detail-modal').classList.remove('open');
+  };
+
+  window.confirmOrder = async function(orderId) {
+    if (!confirm('Confirm this order? This will notify the system that you are preparing the shipment.')) return;
+    await updateOrderStatus(orderId, 'confirmed');
+    loadOrders();
+  };
+
+  window.shipOrder = async function(orderId) {
+    const order = allOrders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const items = Array.isArray(order.order_items) ? order.order_items : JSON.parse(order.order_items || '[]');
+    const shipData = order.shipping_data ? (typeof order.shipping_data === 'string' ? JSON.parse(order.shipping_data) : order.shipping_data) : {};
+
+    const orderData = {
+      order_reference: order.id.substring(0, 8).toUpperCase(),
+      recipient_name: order.customer_name || shipData.recipient_name || '',
+      recipient_phone: shipData.recipient_phone || '',
+      recipient_email: order.email || '',
+      address_line1: shipData.address?.line1 || '',
+      address_line2: shipData.address?.line2 || '',
+      postal_code: shipData.address?.postal || '',
+      country: shipData.address?.country || 'SG',
+      items: items.map(i => ({ name: i.product_name, qty: i.quantity, price: i.unit_price_cents / 100 }))
+    };
+
+    const carrier = shipData.carrier || '';
+
+    if (carrier.includes('SPX')) {
+      const result = await createSPXShipment(orderData);
+      if (result.success) {
+        await updateOrderStatus(orderId, 'shipped', result.tracking_number, 'SPX Express');
+        loadOrders();
+      } else {
+        alert('SPX Error: ' + result.error + '\n\nPlease manually enter tracking number.');
+        const tracking = prompt('Enter tracking number manually:');
+        if (tracking) {
+          await updateOrderStatus(orderId, 'shipped', tracking, 'SPX Express');
+          loadOrders();
+        }
+      }
+    } else if (carrier.includes('SingPost')) {
+      const result = await createSingpostShipment({ ...orderData, service_type: shipData.method?.includes('Registered') ? 'INTERNATIONAL_REGISTERED' : 'INTERNATIONAL_PRIORITY' });
+      if (result.success) {
+        await updateOrderStatus(orderId, 'shipped', result.tracking_number, 'SingPost');
+        loadOrders();
+      } else {
+        alert('SingPost Error: ' + result.error + '\n\nPlease manually enter tracking number.');
+        const tracking = prompt('Enter tracking number manually:');
+        if (tracking) {
+          await updateOrderStatus(orderId, 'shipped', tracking, 'SingPost');
+          loadOrders();
+        }
+      }
+    } else {
+      const tracking = prompt('No carrier selected. Enter tracking number:');
+      if (tracking) {
+        await updateOrderStatus(orderId, 'shipped', tracking, 'Standard');
+        loadOrders();
+      }
+    }
+  };
+
+  window.printLabel = function(orderId) {
+    window.open(`label.html?order=${orderId}`, '_blank', 'width=400,height=600');
+  };
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      if (filter === 'all') {
+        renderOrders(allOrders);
+      } else {
+        const filtered = allOrders.filter(o => o.status === filter);
+        renderOrders(filtered);
+      }
+    });
+  });
+
+  document.getElementById('refresh-btn').addEventListener('click', loadOrders);
+  document.getElementById('order-detail-modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('order-detail-modal')) closeModal();
+  });
+
+  loadOrders();
+</script>
+</body>
+</html>

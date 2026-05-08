@@ -147,7 +147,7 @@
               <span class="qty-value">1</span>
               <button class="qty-plus" aria-label="Increase quantity">+</button>
             </div>
-            <button class="btn btn-primary add-to-cart" style="flex:1; justify-content:center;">Add to Cart</button>
+            <button class="btn btn-primary add-to-cart" style="flex:1; justify-content:center;" onclick="window.__addToCartFromDetail(this)">Add to Cart</button>
           </div>
 
           <p class="product-trust">
@@ -231,8 +231,41 @@
   <script type="module">
     import supabase from './js/supabase.js';
 
-    let currentProduct = null;
-    let allProducts = [];
+    window.__addToCartFromDetail = function(btn) {
+      const qty = parseInt(document.querySelector('.qty-value')?.textContent || '1');
+      const name = document.getElementById('product-title')?.textContent || '';
+      const priceText = document.getElementById('product-price')?.textContent || '';
+      const grade = document.getElementById('product-grade')?.textContent || '';
+      const price = parseFloat(priceText.replace('$', '').replace('S$', '').replace('SGD', '').trim()) || 0;
+      const imgEl = document.querySelector('.product-gallery-main img');
+      const image = imgEl?.src || '';
+
+      if (!name || price === 0) {
+        alert('Could not add to cart. Please refresh and try again.');
+        return;
+      }
+
+      const CART_KEY = 'eebecco_cart';
+      let cart = [];
+      try { cart = JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch {}
+      const existing = cart.find(item => item.name === name);
+      if (existing) existing.qty += qty;
+      else cart.push({ name, price, grade, image, qty });
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+
+      const countEl = document.querySelector('.cart-count');
+      if (countEl) {
+        const total = cart.reduce((s, i) => s + i.qty, 0);
+        countEl.textContent = total;
+        countEl.classList.add('visible');
+        countEl.style.transform = 'scale(1.4)';
+        setTimeout(() => { countEl.style.transform = 'scale(1)'; }, 200);
+      }
+
+      btn.textContent = 'Added ✓';
+      btn.disabled = true;
+      setTimeout(() => { btn.textContent = 'Add to Cart'; btn.disabled = false; }, 1500);
+    };
 
     async function loadAllProducts() {
       const { data } = await supabase
