@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Setup — eebecco</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    body { background: var(--deep-ebony, #1A1108); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .setup-card { background: #221508; border: 1px solid rgba(201,147,58,0.25); border-radius: 12px; padding: 2rem; width: 400px; max-width: 90vw; text-align: center; }
+    .setup-card h1 { color: var(--white, #fff); font-size: 1.5rem; margin-bottom: 0.5rem; font-family: Georgia, serif; }
+    .setup-card p { color: rgba(245,236,215,0.5); font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.6; }
+    .setup-card button { background: var(--antique-gold, #C9933A); color: #1A1108; border: none; padding: 0.85rem 2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; }
+    .setup-card button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .result { margin-top: 1rem; padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; display: none; }
+    .result.success { background: rgba(76,175,125,0.15); border: 1px solid rgba(76,175,125,0.4); color: #6DA85E; }
+    .result.error { background: rgba(201,64,64,0.15); border: 1px solid rgba(201,64,64,0.4); color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <div class="setup-card">
+    <h1>Admin Setup</h1>
+    <p>This will grant admin access to your currently logged-in user account. Login first, then click the button below.</p>
+    <button id="grant-btn">Grant Me Admin Access</button>
+    <div id="result" class="result"></div>
+  </div>
+
+  <script type="module">
+    import supabase from './js/supabase.js';
+
+    const btn = document.getElementById('grant-btn');
+    const result = document.getElementById('result');
+
+    async function grantAdmin() {
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+      result.style.display = 'none';
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          result.textContent = 'No user logged in. Please login first at admin-login.html';
+          result.className = 'result error';
+          result.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Grant Me Admin Access';
+          return;
+        }
+
+        const { data: profile, error: fetchError } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', user.id)
+          .single();
+
+        if (fetchError && fetchError.code !== 'PGRST116') {
+          throw new Error(fetchError.message);
+        }
+
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ is_admin: true })
+          .eq('id', user.id);
+
+        if (updateError) throw new Error(updateError.message);
+
+        result.textContent = 'Success! You now have admin access. Go to admin-login.html to access the panel.';
+        result.className = 'result success';
+        result.style.display = 'block';
+        btn.textContent = 'Done!';
+      } catch (err) {
+        result.textContent = 'Error: ' + err.message;
+        result.className = 'result error';
+        result.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Grant Me Admin Access';
+      }
+    }
+
+    btn.addEventListener('click', grantAdmin);
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      btn.textContent = 'Grant Admin to ' + session.user.email;
+    }
+  </script>
+</body>
+</html>

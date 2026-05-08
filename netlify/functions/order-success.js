@@ -100,6 +100,14 @@ exports.handler = async (event) => {
       await supabase.rpc('increment_discount_usage', { code: discountCode.toUpperCase() }).catch(() => {});
     }
 
+    // Send admin notification email
+    const adminEmail = process.env.ADMIN_EMAIL || 'super.ric@gmail.com';
+    const notifyResponse = await fetch(process.env.URL + '/.netlify/functions/notify-admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order, admin_email: adminEmail }),
+    }).catch(() => null);
+
     return { statusCode: 200, body: JSON.stringify({ success: true, order_id: order.id }) };
   } catch (err) {
     console.error('Webhook error:', err);

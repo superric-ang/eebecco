@@ -1,6 +1,16 @@
+[build.environment]
+  NODE_VERSION = "18"
+  GMAIL_EMAIL = "eebecco@gmail.com"
+  GMAIL_APP_PASSWORD = "ubco ahev fhgl ajzp"
+  ADMIN_EMAIL = "super.ric@gmail.com"
+  URL = "https://eebecco.netlify.app"
+  SUPABASE_URL = "https://hupiajaktgvilomucadg.supabase.co"
+  SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1cGlhamFrdGd2aWxvbXVjYWRnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njk2OTIzNSwiZXhwIjoyMDkyNTQ1MjM1fQ.BTAkXyVpkUnatQDiXmP2hhM3OmlepW0CscoDJosDwZA"
+
 [build]
   command = "echo 'No build needed'"
   publish = "."
 
 [functions]
   directory = "netlify/functions"
+  node_bundler = "zisi"
