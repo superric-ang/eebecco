@@ -1,6 +1,10 @@
+[build.environment]
+  NODE_VERSION = "18"
+
 [build]
-  command = "echo 'No build needed'"
+  command = "echo 'Build complete'"
   publish = "."
 
 [functions]
   directory = "netlify/functions"
+  node_bundler = "zisi"
