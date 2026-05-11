@@ -187,7 +187,7 @@
               <div class="product-card-footer">
                 <span class="product-card-price">S$${(product.price || 0).toFixed(2)}</span>
                 <button class="btn btn-ghost" style="font-size:0.68rem; padding:0.55rem 1.2rem;"
-                  onclick="window.__addToCart(this, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${(product.grade_label || product.grade || '').replace(/'/g, "\\'")}', '${imageUrl}')">Add to Cart</button>
+                  onclick="window.__addToCart(this, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${(product.grade_label || product.grade || '').replace(/'/g, "\\'")}', '${imageUrl}')">${product.badge === 'Pre-Order' ? 'Pre-Order' : 'Add to Cart'}</button>
               </div>
             </div>
           </article>

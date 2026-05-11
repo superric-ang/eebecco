@@ -84,6 +84,7 @@
         <div class="product-gallery reveal">
           <div class="product-gallery-main" id="product-gallery-main" style="background: linear-gradient(160deg, #0D1E0E 0%, #1E3A1F 40%, #2D5A27 80%);">
             <img id="product-gallery-img" src="" alt="" onerror="this.style.display='none'">
+            <span class="product-card-badge" id="product-badge" style="display:none;"></span>
           </div>
         </div>
 
@@ -325,6 +326,27 @@
       img.src = imageUrl;
       img.alt = product.name;
 
+      const badgeEl = document.getElementById('product-badge');
+      const isPreOrder = product.badge === 'Pre-Order';
+      if (product.badge) {
+        badgeEl.textContent = product.badge;
+        badgeEl.style.display = '';
+      } else {
+        badgeEl.style.display = 'none';
+      }
+
+      const addBtn = document.querySelector('.product-actions .btn-primary');
+      if (addBtn) {
+        addBtn.textContent = isPreOrder ? 'Pre-Order Now' : 'Add to Cart';
+      }
+
+      const trustEl = document.querySelector('.product-trust');
+      if (trustEl) {
+        trustEl.textContent = isPreOrder
+          ? 'Pre-order now · Ships by release date · Pay when it ships'
+          : 'Radiation & heavy metal tested · Direct from family farm · Ships within 24 hours';
+      }
+
       const specs = product.specs ? JSON.parse(product.specs) : {};
       const specsEl = document.getElementById('product-specs');
       specsEl.innerHTML = Object.entries(specs).map(([key, val]) => `
@@ -344,7 +366,7 @@
           "@type": "Offer",
           "priceCurrency": "SGD",
           "price": product.price,
-          "availability": "https://schema.org/InStock"
+          "availability": isPreOrder ? "https://schema.org/PreOrder" : "https://schema.org/InStock"
         }
       };
       document.getElementById('product-schema').textContent = JSON.stringify(schema);
@@ -360,6 +382,26 @@
       renderRelatedProducts();
     }
 
+    window.__addToCartRelated = function(btn, name, price, grade, image) {
+      const cart = JSON.parse(localStorage.getItem('eebecco_cart') || '[]');
+      const existing = cart.find(item => item.name === name);
+      if (existing) existing.qty++;
+      else cart.push({ name, price, grade, image, qty: 1 });
+      localStorage.setItem('eebecco_cart', JSON.stringify(cart));
+      const countEl = document.querySelector('.cart-count');
+      if (countEl) {
+        const total = cart.reduce((s, i) => s + i.qty, 0);
+        countEl.textContent = total;
+        countEl.classList.add('visible');
+        countEl.style.transform = 'scale(1.4)';
+        setTimeout(() => { countEl.style.transform = 'scale(1)'; }, 200);
+      }
+      const originalText = btn.getAttribute('data-original-text') || 'Add to Cart';
+      btn.textContent = 'Added ✓';
+      btn.disabled = true;
+      setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
+    };
+
     function renderRelatedProducts() {
       const related = document.getElementById('related-products');
       if (!related) return;
@@ -369,6 +411,7 @@
       related.innerHTML = others.map(product => {
         const imageUrl = product.image_url || 'ceremonial A.jpg';
         const gradeDisplay = product.grade_label || product.grade || '';
+        const btnText = product.badge === 'Pre-Order' ? 'Pre-Order' : 'Add to Cart';
         return `
           <article class="product-card reveal" data-grade="${product.grade || ''}">
             <div class="card-corners">
@@ -387,11 +430,9 @@
               <p class="product-card-desc">${(product.description || '').substring(0, 80)}...</p>
               <div class="product-card-footer">
                 <span class="product-card-price">S$${(product.price || 0).toFixed(2)}</span>
-                <button class="btn btn-ghost add-to-cart" style="font-size:0.68rem; padding:0.55rem 1.2rem;"
-                  data-name="${product.name}"
-                  data-price="${product.price}"
-                  data-grade="${product.grade || ''}"
-                  data-image="${imageUrl}">Add to Cart</button>
+                <button class="btn btn-ghost" style="font-size:0.68rem; padding:0.55rem 1.2rem;"
+                  data-original-text="${btnText}"
+                  onclick="window.__addToCartRelated(this, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${gradeDisplay.replace(/'/g, "\\'")}', '${imageUrl}')">${btnText}</button>
               </div>
             </div>
           </article>
