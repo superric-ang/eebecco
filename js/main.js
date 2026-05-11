@@ -1,5 +1,12 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
+  /* ── Load color scheme ── */
+  try {
+    const { loadActiveScheme, applyScheme } = await import('./site-settings.js');
+    const scheme = await loadActiveScheme();
+    applyScheme(scheme);
+  } catch {}
+
   /* ── Auth-aware header ── */
   async function updateAuthNav() {
     try {

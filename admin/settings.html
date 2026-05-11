@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Settings — eebecco Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .scheme-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .scheme-card {
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      position: relative;
+    }
+    .scheme-card:hover { border-color: var(--admin-gold); }
+    .scheme-card.selected { border-color: var(--admin-gold); box-shadow: 0 0 0 2px rgba(201,147,58,0.2); }
+    .scheme-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 0.5rem; right: 0.75rem;
+      color: var(--admin-gold);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .scheme-preview {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 0.75rem;
+      border-radius: 6px;
+      overflow: hidden;
+      height: 32px;
+    }
+    .scheme-preview span { flex: 1; }
+    .scheme-card h4 { font-size: 0.88rem; font-weight: 600; margin: 0 0 0.25rem; }
+    .scheme-card p { font-size: 0.78rem; color: var(--admin-text-dim); margin: 0; }
+    .scheme-card .scheme-id {
+      font-size: 0.65rem;
+      color: var(--admin-text-dim);
+      font-family: monospace;
+      margin-top: 0.4rem;
+    }
+    .custom-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: 10px;
+    }
+    .custom-section h3 { margin: 0 0 1rem; font-size: 0.95rem; }
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+    .color-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .color-field label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--admin-text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .color-field-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .color-field-row input[type="color"] {
+      width: 40px;
+      height: 36px;
+      padding: 2px;
+      border: 1px solid var(--admin-border);
+      border-radius: 6px;
+      background: none;
+      cursor: pointer;
+    }
+    .color-field-row input[type="text"] {
+      flex: 1;
+      padding: 0.45rem 0.6rem;
+      background: var(--admin-sidebar);
+      border: 1px solid var(--admin-border);
+      border-radius: 6px;
+      color: var(--admin-text);
+      font-size: 0.82rem;
+      font-family: monospace;
+    }
+    .color-field-row input[type="text"]:focus { outline: none; border-color: var(--admin-gold); }
+    .status-msg {
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .status-msg.success { display: block; background: rgba(76,175,125,0.12); border: 1px solid var(--admin-success); color: var(--admin-success); }
+    .status-msg.error { display: block; background: rgba(201,64,64,0.12); border: 1px solid var(--admin-danger); color: var(--admin-danger); }
+    .btn-row { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <a href="index.html" class="admin-sidebar-logo">
+        <img src="../logo.jpg" alt="eebecco" onerror="this.style.display='none'">
+        <div><span>eebecco</span><small>Admin Panel</small></div>
+      </a>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-section">Main</div>
+      <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a href="orders.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/></svg>Orders</a>
+      <div class="admin-nav-section">Catalog</div>
+      <a href="products.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>Products</a>
+      <a href="stock.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>Stock</a>
+      <div class="admin-nav-section">Content</div>
+      <a href="pages.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Pages</a>
+      <div class="admin-nav-section">Appearance</div>
+      <a href="settings.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Color Schemes</a>
+      <div class="admin-nav-section">Engagement</div>
+      <a href="contacts.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Contact Inquiries</a>
+      <div class="admin-nav-section">Settings</div>
+      <a href="admins.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Admin Users</a>
+      <a href="#" id="logout-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</a>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="user-name">Admin</div>
+          <div class="user-email" id="user-email">—</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h2>Color Schemes</h2>
+        <div class="breadcrumb"><a href="index.html">Admin</a> / Color Schemes</div>
+      </div>
+    </div>
+
+    <div id="status-msg" class="status-msg"></div>
+
+    <div class="admin-card" style="margin-bottom:1.5rem;">
+      <div class="admin-card-header">
+        <h3>Preset Schemes</h3>
+      </div>
+      <div class="scheme-grid" id="scheme-grid"></div>
+    </div>
+
+    <div class="custom-section" id="custom-section">
+      <h3>Custom Scheme</h3>
+      <p style="font-size:0.82rem; color:var(--admin-text-dim); margin-bottom:1rem;">Pick your own colors. Changes preview instantly on this page.</p>
+      <div class="color-grid" id="custom-colors"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="save-custom-btn">Save Custom Scheme</button>
+        <button class="btn btn-secondary" id="reset-btn">Reset to Default</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import supabase from '../js/supabase.js';
+  import { DEFAULT_SCHEME, PRESET_SCHEMES, applyScheme, resetScheme } from '../js/site-settings.js';
+
+  if (!sessionStorage.getItem('admin_uid')) { window.location.href = 'admin-login.html'; }
+
+  const email = sessionStorage.getItem('admin_email');
+  document.getElementById('user-name').textContent = email ? email.split('@')[0] : 'Admin';
+  document.getElementById('user-email').textContent = email || '—';
+  document.getElementById('user-avatar').textContent = email ? email[0].toUpperCase() : 'A';
+
+  document.getElementById('logout-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    sessionStorage.clear();
+    window.location.href = 'admin-login.html';
+  });
+
+  const COLOR_LABELS = {
+    'deep-ebony': 'Background (deep)',
+    'rich-espresso': 'Surface (secondary)',
+    'antique-gold': 'Gold (primary accent)',
+    'aged-brass': 'Gold (hover)',
+    'warm-cream': 'Text (primary)',
+    'muted-gold': 'Text (muted)',
+    'matcha': 'Matcha (accent)',
+    'matcha-bright': 'Matcha (bright)',
+    'matcha-deep': 'Matcha (deep)',
+    'card-bg-solid': 'Card Background',
+  };
+
+  let activeSchemeId = 'default';
+  let customColors = { ...DEFAULT_SCHEME };
+
+  function renderSchemeGrid() {
+    const grid = document.getElementById('scheme-grid');
+    grid.innerHTML = PRESET_SCHEMES.map(s => {
+      const isSelected = activeSchemeId === s.id;
+      const previewColors = Object.values(s.colors).slice(0, 6);
+      return `<div class="scheme-card${isSelected ? ' selected' : ''}" data-id="${s.id}">
+        <div class="scheme-preview">${previewColors.map(c => `<span style="background:${c}"></span>`).join('')}</div>
+        <h4>${s.name}</h4>
+        <p>${s.description}</p>
+        <div class="scheme-id">/${s.id}</div>
+      </div>`;
+    }).join('');
+
+    grid.querySelectorAll('.scheme-card').forEach(card => {
+      card.addEventListener('click', () => selectPreset(card.dataset.id));
+    });
+  }
+
+  function renderCustomColors() {
+    const container = document.getElementById('custom-colors');
+    container.innerHTML = Object.entries(customColors).map(([key, val]) => `
+      <div class="color-field">
+        <label>${COLOR_LABELS[key] || key}</label>
+        <div class="color-field-row">
+          <input type="color" data-key="${key}" value="${val}">
+          <input type="text" data-key="${key}" value="${val}" maxlength="7">
+        </div>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('input[type="color"]').forEach(input => {
+      input.addEventListener('input', () => {
+        const key = input.dataset.key;
+        customColors[key] = input.value;
+        const textInput = container.querySelector(`input[type="text"][data-key="${key}"]`);
+        if (textInput) textInput.value = input.value;
+        applyScheme({ colors: customColors });
+      });
+    });
+
+    container.querySelectorAll('input[type="text"]').forEach(input => {
+      input.addEventListener('input', () => {
+        const key = input.dataset.key;
+        let val = input.value.trim();
+        if (/^#[0-9a-f]{6}$/i.test(val)) {
+          customColors[key] = val;
+          const colorInput = container.querySelector(`input[type="color"][data-key="${key}"]`);
+          if (colorInput) colorInput.value = val;
+          applyScheme({ colors: customColors });
+        }
+      });
+    });
+  }
+
+  async function selectPreset(id) {
+    activeSchemeId = id;
+    document.querySelectorAll('.scheme-card').forEach(c => c.classList.toggle('selected', c.dataset.id === id));
+
+    const scheme = PRESET_SCHEMES.find(s => s.id === id);
+    if (scheme) {
+      applyScheme(scheme);
+      customColors = { ...scheme.colors };
+      renderCustomColors();
+    }
+  }
+
+  async function saveScheme(schemeData) {
+    const msg = document.getElementById('status-msg');
+    const { error } = await supabase.from('site_settings').upsert(
+      { key: 'color_scheme', value: schemeData, updated_at: new Date().toISOString() },
+      { onConflict: 'key' }
+    );
+    if (error) {
+      msg.textContent = 'Error: ' + error.message;
+      msg.className = 'status-msg error';
+    } else {
+      msg.textContent = '✓ Color scheme saved! It is now live on the website.';
+      msg.className = 'status-msg success';
+      sessionStorage.removeItem('eebecco_scheme');
+    }
+    setTimeout(() => { msg.className = 'status-msg'; }, 4000);
+  }
+
+  async function loadActive() {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'color_scheme')
+      .single();
+
+    if (!error && data) {
+      const saved = data.value;
+      const schemeId = saved.id || 'custom';
+      if (schemeId !== 'custom') {
+        const preset = PRESET_SCHEMES.find(s => s.id === schemeId);
+        if (preset) {
+          activeSchemeId = schemeId;
+          customColors = { ...preset.colors };
+          applyScheme(preset);
+        }
+      } else {
+        activeSchemeId = 'custom';
+        customColors = { ...(saved.colors || DEFAULT_SCHEME) };
+        applyScheme(saved);
+      }
+    } else {
+      applyScheme({ colors: DEFAULT_SCHEME });
+      customColors = { ...DEFAULT_SCHEME };
+    }
+    renderSchemeGrid();
+    renderCustomColors();
+  }
+
+  document.getElementById('save-custom-btn').addEventListener('click', () => {
+    const schemeData = activeSchemeId === 'custom'
+      ? { id: 'custom', colors: customColors }
+      : { id: activeSchemeId, colors: customColors };
+    saveScheme(schemeData);
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (!confirm('Reset to the original default color scheme?')) return;
+    activeSchemeId = 'default';
+    customColors = { ...DEFAULT_SCHEME };
+    resetScheme();
+    renderSchemeGrid();
+    renderCustomColors();
+    const { error } = supabase.from('site_settings').delete().eq('key', 'color_scheme');
+    if (!error) {
+      document.getElementById('status-msg').textContent = '✓ Reset to default color scheme.';
+      document.getElementById('status-msg').className = 'status-msg success';
+      setTimeout(() => { document.getElementById('status-msg').className = 'status-msg'; }, 4000);
+    }
+  });
+
+  loadActive();
+</script>
+</body>
+</html>

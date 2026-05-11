@@ -130,6 +130,23 @@ CREATE POLICY "Authenticated users can manage all pages"
   ON pages FOR ALL
   USING (auth.role() = 'authenticated');
 
+-- Create site_settings table for color schemes and other global settings
+CREATE TABLE IF NOT EXISTS site_settings (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can read site settings"
+  ON site_settings FOR SELECT
+  USING (true);
+
+CREATE POLICY "Authenticated users can manage site settings"
+  ON site_settings FOR ALL
+  USING (auth.role() = 'authenticated');
+
 -- Insert sample discount codes for testing
 INSERT INTO discount_codes (code, discount_type, discount_value, description, is_active)
 VALUES
