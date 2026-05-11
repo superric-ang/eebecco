@@ -31,9 +31,9 @@
     <div class="cart-drawer-footer">
       <div class="cart-total-row">
         <span class="cart-total-label">Total</span>
-        <span class="cart-total-price">$0.00</span>
+        <span class="cart-total-price">S$0.00</span>
       </div>
-      <button class="btn btn-primary" id="checkout-btn">Proceed to Checkout</button>
+        <button class="btn btn-primary" id="checkout-btn" onclick="event.preventDefault(); window.location.href='checkout.html'">Proceed to Checkout</button>
     </div>
   </div>
 
@@ -147,7 +147,7 @@
               <span class="qty-value">1</span>
               <button class="qty-plus" aria-label="Increase quantity">+</button>
             </div>
-            <button class="btn btn-primary add-to-cart" style="flex:1; justify-content:center;" onclick="window.__addToCartFromDetail(this)">Add to Cart</button>
+            <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="window.__addToCartFromDetail(this)">Add to Cart</button>
           </div>
 
           <p class="product-trust">
@@ -236,7 +236,7 @@
       const name = document.getElementById('product-title')?.textContent || '';
       const priceText = document.getElementById('product-price')?.textContent || '';
       const grade = document.getElementById('product-grade')?.textContent || '';
-      const price = parseFloat(priceText.replace('$', '').replace('S$', '').replace('SGD', '').trim()) || 0;
+      const price = parseFloat(priceText.replace('S$', '').replace('SGD', '').replace('$', '').trim()) || 0;
       const imgEl = document.querySelector('.product-gallery-main img');
       const image = imgEl?.src || '';
 
@@ -278,14 +278,23 @@
     async function getProductFromURL() {
       const params = new URLSearchParams(window.location.search);
       const slug = params.get('name');
-      if (!slug) return null;
+      console.log('[DEBUG] URL search:', window.location.search);
+      console.log('[DEBUG] URL slug param:', slug);
+      if (!slug) {
+        console.log('[DEBUG] No slug in URL params');
+        return null;
+      }
+
+      const decodedSlug = decodeURIComponent(slug);
+      console.log('[DEBUG] Decoded slug:', decodedSlug);
 
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('slug', decodeURIComponent(slug))
+        .eq('slug', decodedSlug)
         .single();
 
+      console.log('[DEBUG] Supabase response:', { data, error });
       if (error) {
         console.error('Error fetching product:', error);
         return null;
@@ -377,7 +386,7 @@
               <h3 class="product-card-title">${product.name}</h3>
               <p class="product-card-desc">${(product.description || '').substring(0, 80)}...</p>
               <div class="product-card-footer">
-                <span class="product-card-price">S$${product.price}</span>
+                <span class="product-card-price">S$${(product.price || 0).toFixed(2)}</span>
                 <button class="btn btn-ghost add-to-cart" style="font-size:0.68rem; padding:0.55rem 1.2rem;"
                   data-name="${product.name}"
                   data-price="${product.price}"
@@ -391,8 +400,11 @@
     }
 
     async function init() {
+      console.log('[DEBUG] init() started');
       await loadAllProducts();
+      console.log('[DEBUG] allProducts loaded:', allProducts.length, 'products');
       const product = await getProductFromURL();
+      console.log('[DEBUG] product from URL:', product?.name || 'null');
       if (product) {
         renderProduct(product);
       } else {

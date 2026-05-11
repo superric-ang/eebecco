@@ -30,9 +30,9 @@
     <div class="cart-drawer-footer">
       <div class="cart-total-row">
         <span class="cart-total-label">Total</span>
-        <span class="cart-total-price">$0.00</span>
+        <span class="cart-total-price">S$0.00</span>
       </div>
-      <button class="btn btn-primary" id="checkout-btn">Proceed to Checkout</button>
+        <button class="btn btn-primary" id="checkout-btn" onclick="event.preventDefault(); window.location.href='checkout.html'">Proceed to Checkout</button>
     </div>
   </div>
 
@@ -144,7 +144,8 @@
         .from('products')
         .select('*')
         .eq('is_active', true)
-        .order('is_featured', { ascending: false });
+        .order('is_featured', { ascending: false })
+        .order('name', { ascending: true });
 
       if (error) {
         console.error('Error loading products:', error);
@@ -154,7 +155,7 @@
       allProducts = products || [];
       renderProducts(allProducts);
 
-      if (typeof revealElements === 'function') revealElements();
+      if (typeof window.revealElements === 'function') window.revealElements();
     }
 
     function renderProducts(products) {
@@ -184,7 +185,7 @@
               <h3 class="product-card-title">${product.name}</h3>
               <p class="product-card-desc">${(product.description || '').substring(0, 80)}...</p>
               <div class="product-card-footer">
-                <span class="product-card-price">S$${product.price}</span>
+                <span class="product-card-price">S$${(product.price || 0).toFixed(2)}</span>
                 <button class="btn btn-ghost" style="font-size:0.68rem; padding:0.55rem 1.2rem;"
                   onclick="window.__addToCart(this, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${(product.grade_label || product.grade || '').replace(/'/g, "\\'")}', '${imageUrl}')">Add to Cart</button>
               </div>
@@ -220,6 +221,7 @@
         } else {
           renderProducts(allProducts.filter(p => p.grade === filter));
         }
+        if (typeof window.revealElements === 'function') window.revealElements();
       });
     });
 

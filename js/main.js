@@ -104,33 +104,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const productCards = document.querySelectorAll('.product-card[data-grade]');
-  if (filterBtns.length && productCards.length) {
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const filter = btn.dataset.filter;
-        productCards.forEach(card => {
-          const show = filter === 'all' || card.dataset.grade === filter;
-          if (show) {
-            card.style.display = '';
-            requestAnimationFrame(() => {
-              card.style.transition = 'opacity 0.4s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1)';
-              card.style.opacity = '1';
-              card.style.transform = 'translateY(0)';
-            });
-          } else {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(12px)';
-            setTimeout(() => { card.style.display = 'none'; }, 350);
-          }
-        });
-      });
-    });
-  }
-
   /* ── Cart System ── */
   const CART_KEY = 'eebecco_cart';
 
@@ -166,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (cart.length === 0) {
       itemsEl.innerHTML = '<p style="text-align:center; color:rgba(245,236,215,0.4); padding:3rem 0; font-family:var(--font-display); font-size:1.1rem;">Your cart is empty</p>';
-      if (totalEl) totalEl.textContent = '$0.00';
+      if (totalEl) totalEl.textContent = 'S$0.00';
       return;
     }
 
@@ -178,7 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="cart-item-info">
           <p class="cart-item-name">${item.name}</p>
           <p class="cart-item-grade">${item.grade}</p>
-          <p class="cart-item-price">$${item.price.toFixed(2)}</p>
+          <p class="cart-item-price">S$${item.price.toFixed(2)}</p>
         </div>
         <div class="cart-item-actions">
           <div class="cart-qty-controls">
@@ -195,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (totalEl) {
       const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      totalEl.textContent = '$' + total.toFixed(2);
+      totalEl.textContent = 'S$' + total.toFixed(2);
     }
 
     itemsEl.querySelectorAll('.cart-qty-btn').forEach(btn => {
@@ -264,14 +237,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.key === 'Escape' && cartDrawer?.classList.contains('open')) closeCartDrawer();
   });
 
-  /* Add to Cart — delegated for dynamic content */
+  /* Add to Cart — delegated for dynamic content (skip product-detail page — it has its own handler) */
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.add-to-cart');
     if (!btn) return;
-    const card = btn.closest('.product-card, .product-info');
+    /* Skip on product.html — that page uses __addToCartFromDetail via onclick */
+    if (document.querySelector('.product-detail')) return;
+    const card = btn.closest('.product-card');
     if (!card) return;
 
-    let name = card.querySelector('.product-card-title, .product-info-title')?.textContent || '';
+    let name = card.querySelector('.product-card-title')?.textContent || '';
     let priceText = card.querySelector('.product-card-price, .product-info-price')?.textContent || '';
     let grade = card.querySelector('.product-card-grade, .product-info-grade')?.textContent || '';
     let image = card.querySelector('img')?.src || '';
@@ -289,7 +264,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (gradeEl) grade = gradeEl.textContent;
     }
 
-    const price = parseFloat(priceText.replace('$', '').replace('S$', '')) || 0;
+    const price = parseFloat(priceText.replace('S$', '').replace('$', '')) || 0;
 
     if (!name || price === 0) return;
 
@@ -337,12 +312,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const v = parseInt(val.textContent);
         if (v < 10) val.textContent = v + 1;
       });
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (e.target.id === 'checkout-btn' || e.target.closest('#checkout-btn')) {
-      initStripe();
     }
   });
 

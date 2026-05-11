@@ -44,8 +44,8 @@ exports.handler = async (event) => {
       line_items: items,
       mode: 'payment',
       customer_email: customerEmail,
-      success_url: `${process.env.URL || 'https://eebecco.netlify.app'}/success.html?session_id={CHECKOUT_SESSION_ID}&order_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.URL || 'https://eebecco.netlify.app'}/checkout.html`,
+      success_url: `${process.env.SITE_URL || 'https://eebecco.netlify.app'}/success.html?session_id={CHECKOUT_SESSION_ID}&order_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.SITE_URL || 'https://eebecco.netlify.app'}/checkout.html`,
       shipping_address_collection: {
         allowed_countries: ['SG', 'MY', 'ID', 'TH', 'VN', 'PH', 'US', 'GB', 'AU', 'JP', 'HK', 'TW', 'KR', 'CN'],
       },
