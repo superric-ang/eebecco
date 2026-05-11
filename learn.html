@@ -83,6 +83,7 @@
 
   <main class="page-main">
     <div class="container">
+      <div id="cms-content" data-page-slug="learn">
 
       <div style="margin-bottom: 5rem;">
         <span class="section-eyebrow reveal">Our Teas</span>
@@ -303,6 +304,7 @@
       </div>
 
     </div>
+    </div><!-- /cms-content -->
   </main>
 
   <footer class="site-footer">
@@ -345,5 +347,16 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script type="module">
+    const cmsContainer = document.getElementById('cms-content');
+    if (cmsContainer) {
+      const { loadPageContent, renderPageContent } = await import('./js/page-renderer.js');
+      const page = await loadPageContent('learn');
+      if (page) {
+        cmsContainer.innerHTML = '';
+        renderPageContent(page.content, cmsContainer);
+      }
+    }
+  </script>
 </body>
 </html>

@@ -94,6 +94,9 @@
     </div>
   </header>
 
+  <!-- ══ CMS CONTENT ══ -->
+  <div id="cms-content" data-page-slug="home">
+
   <!-- ══ HERO ══ -->
   <section class="hero">
     <div class="hero-bg-img"></div>
@@ -357,6 +360,8 @@
     </div>
   </section>
 
+  </div><!-- /cms-content -->
+
   <!-- ══ FOOTER ══ -->
   <footer class="site-footer">
     <div class="container">
@@ -482,8 +487,21 @@
       }
     }
 
-    loadFeaturedProducts();
-    loadFeaturedHeroImage();
+    const cmsContainer = document.getElementById('cms-content');
+    if (cmsContainer) {
+      const { loadPageContent, renderPageContent } = await import('./js/page-renderer.js');
+      const page = await loadPageContent('home');
+      if (page) {
+        cmsContainer.innerHTML = '';
+        renderPageContent(page.content, cmsContainer);
+      } else {
+        loadFeaturedProducts();
+        loadFeaturedHeroImage();
+      }
+    } else {
+      loadFeaturedProducts();
+      loadFeaturedHeroImage();
+    }
   </script>
 </body>
 </html>

@@ -84,6 +84,7 @@
   <!-- CONTACT FORM -->
   <main class="page-main">
     <div class="container" style="max-width:720px;">
+      <div id="cms-content" data-page-slug="contact"></div>
 
       <div class="admin-card reveal" style="padding:2.5rem;">
         <div id="contact-form-container">
@@ -245,5 +246,15 @@
     };
   </script>
   <script src="js/main.js"></script>
+  <script type="module">
+    const cmsContainer = document.getElementById('cms-content');
+    if (cmsContainer) {
+      const { loadPageContent, renderPageContent } = await import('./js/page-renderer.js');
+      const page = await loadPageContent('contact');
+      if (page && page.content && page.content.length) {
+        renderPageContent(page.content, cmsContainer);
+      }
+    }
+  </script>
 </body>
 </html>

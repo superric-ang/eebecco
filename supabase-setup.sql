@@ -109,6 +109,27 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
+-- Create pages table for CMS content management
+CREATE TABLE IF NOT EXISTS pages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
+  content JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view published pages"
+  ON pages FOR SELECT
+  USING (status = 'published');
+
+CREATE POLICY "Authenticated users can manage all pages"
+  ON pages FOR ALL
+  USING (auth.role() = 'authenticated');
+
 -- Insert sample discount codes for testing
 INSERT INTO discount_codes (code, discount_type, discount_value, description, is_active)
 VALUES

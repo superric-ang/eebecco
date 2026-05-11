@@ -84,6 +84,7 @@
   <main class="quality-section">
     <div class="container">
       <div class="quality-content">
+        <div id="cms-content" data-page-slug="quality">
 
         <div class="quality-block reveal">
           <h2>Our Sourcing Philosophy</h2>
@@ -168,6 +169,7 @@
         </div>
 
       </div>
+      </div><!-- /cms-content -->
     </div>
   </main>
 
@@ -211,5 +213,16 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script type="module">
+    const cmsContainer = document.getElementById('cms-content');
+    if (cmsContainer) {
+      const { loadPageContent, renderPageContent } = await import('./js/page-renderer.js');
+      const page = await loadPageContent('quality');
+      if (page) {
+        cmsContainer.innerHTML = '';
+        renderPageContent(page.content, cmsContainer);
+      }
+    }
+  </script>
 </body>
 </html>
