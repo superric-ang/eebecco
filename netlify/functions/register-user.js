@@ -23,15 +23,15 @@ exports.handler = async (event) => {
       return { statusCode: 500, body: JSON.stringify({ error: 'Server configuration error.' }) };
     }
 
+    // Try using the regular signup endpoint with service key
     const body = JSON.stringify({
       email,
       password,
-      email_confirm: true,
       data: { full_name: fullName },
     });
 
     const result = await new Promise((resolve, reject) => {
-      const url = new URL(`${supabaseUrl}/auth/v1/admin/users`);
+      const url = new URL(`${supabaseUrl}/auth/v1/signup`);
       const req = https.request(url, {
         method: 'POST',
         headers: {
@@ -53,19 +53,19 @@ exports.handler = async (event) => {
       req.end();
     });
 
-    console.log('Auth API response status:', result.status);
-    console.log('Auth API response body:', JSON.stringify(result.body).substring(0, 200));
+    console.log('Signup response status:', result.status);
+    console.log('Signup response body:', JSON.stringify(result.body).substring(0, 300));
 
     if (result.status >= 400) {
       const msg = result.body?.msg || result.body?.error || JSON.stringify(result.body);
-      console.error('Supabase Auth API error:', result.status, msg);
+      console.error('Signup API error:', result.status, msg);
       return {
         statusCode: 400,
         body: JSON.stringify({ error: msg }),
       };
     }
 
-    const userId = result.body?.id;
+    const userId = result.body?.user?.id || result.body?.id;
     console.log('User created with ID:', userId);
     if (userId) {
       await new Promise((resolve) => {
