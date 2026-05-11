@@ -406,6 +406,22 @@
           <div class="editor-panel-header">Add Element</div>
           <div class="editor-panel-body">
             <div class="element-type-grid">
+              <button class="elem-type-btn" onclick="addElement('page-header')" style="grid-column:span 2;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Page Header
+              </button>
+              <button class="elem-type-btn" onclick="addElement('section-header')" style="grid-column:span 2;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="4" y1="14" x2="20" y2="14"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+                Section Header (with divider)
+              </button>
+              <button class="elem-type-btn" onclick="addElement('content-block')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 10h16M4 14h12M4 18h8"/></svg>
+                Content Block
+              </button>
+              <button class="elem-type-btn" onclick="addElement('card')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M12 9v6M9 12h6"/></svg>
+                Card
+              </button>
               <button class="elem-type-btn" onclick="addElement('heading')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16M4 6h16M4 18h10"/></svg>
                 Heading
@@ -429,6 +445,14 @@
               <button class="elem-type-btn" onclick="addElement('columns')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg>
                 Columns
+              </button>
+              <button class="elem-type-btn" onclick="addElement('stats')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                Stats Row
+              </button>
+              <button class="elem-type-btn" onclick="addElement('two-column')" style="grid-column:span 2;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="9" height="16" rx="1"/><rect x="13" y="4" width="9" height="16" rx="1"/></svg>
+                Two-Column Layout
               </button>
               <button class="elem-type-btn" onclick="addElement('divider')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="12" x2="21" y2="12"/></svg>
@@ -519,15 +543,21 @@
   // ── Element defaults ──────────────────────────────────────────────────────
   function defaultData(type) {
     const map = {
-      heading: { text: 'New Heading', level: 'h2' },
-      text:    { content: 'Enter your text here. Click to edit.' },
-      image:   { url: '', alt: '', caption: '' },
-      video:   { url: '', title: 'Video' },
-      button:  { label: 'Click Here', url: '#', style: 'primary', align: 'left' },
-      columns: { count: 2, items: ['Column 1 content', 'Column 2 content'] },
-      divider: { style: 'solid' },
-      spacer:  { height: 40 },
-      html:    { code: '<!-- Paste your HTML or embed code here -->' },
+      'page-header':    { eyebrow: 'Section', title: 'Page <em>Title</em>', subtitle: 'Optional subtitle text.', background_url: 'Powder.jpg', ornament: '◆' },
+      'section-header': { eyebrow: 'Section', title: 'Section Title', subtitle: 'Optional subtitle.', ornament: '◆' },
+      'content-block':  { heading: 'Block Heading', content: 'Your content text goes here.', list_items: [], list_bullet: '◆' },
+      card:             { icon: '🍵', title: 'Card Title', description: 'Card description text.', japanese: '', link_url: '', link_text: 'Learn More' },
+      heading:          { text: 'New Heading', level: 'h2' },
+      text:             { content: 'Enter your text here. Click to edit.' },
+      image:            { url: '', alt: '', caption: '' },
+      video:            { url: '', title: 'Video' },
+      button:           { label: 'Click Here', url: '#', style: 'primary', align: 'left' },
+      columns:          { count: 2, items: ['Column 1 content', 'Column 2 content'] },
+      stats:            { items: [{ number: '800+', label: 'Years of Tradition' }, { number: '3', label: 'Generations' }, { number: '100%', label: 'Traceable' }] },
+      'two-column':     { image_url: '', image_alt: '', image_caption: '', eyebrow: '', title: 'Section Title', show_divider: true, content: 'Your content here.', facts: [], button_url: '', button_text: 'Learn More', button_style: 'primary', reverse: false },
+      divider:          { style: 'solid' },
+      spacer:           { height: 40 },
+      html:             { code: '<!-- Paste your HTML or embed code here -->' },
     };
     return map[type] || {};
   }
@@ -575,7 +605,7 @@
   function renderElementHtml(el, idx) {
     const isFirst = idx === 0;
     const isLast = idx === elements.length - 1;
-    const typeName = { heading:'Heading', text:'Text', image:'Image', video:'Video', button:'Button', columns:'Columns', divider:'Divider', spacer:'Spacer', html:'HTML' }[el.type] || el.type;
+    const typeName = { 'page-header':'Page Header', 'section-header':'Section Header', 'content-block':'Content Block', card:'Card', heading:'Heading', text:'Text', image:'Image', video:'Video', button:'Button', columns:'Columns', stats:'Stats Row', 'two-column':'Two Columns', divider:'Divider', spacer:'Spacer', html:'HTML' }[el.type] || el.type;
 
     return `<div class="page-element${selectedId === el.id ? ' selected' : ''}" data-id="${el.id}">
       <div class="element-toolbar">
@@ -594,6 +624,55 @@
   function renderPreview(el) {
     const d = el.data;
     switch (el.type) {
+      case 'page-header':
+        return `<div style="padding:1rem; background:var(--admin-bg); border-radius:6px; text-align:center;">
+          <div style="font-size:0.7rem; color:var(--admin-gold); text-transform:uppercase; letter-spacing:0.1em;">${escHtml(d.eyebrow || '')}</div>
+          <div style="font-size:1rem; font-weight:600; margin:0.3rem 0;">${d.title || 'Page Title'}</div>
+          <div style="font-size:0.75rem; color:var(--admin-text-dim);">${escHtml(d.subtitle || '')}</div>
+        </div>`;
+
+      case 'section-header':
+        return `<div style="text-align:center;">
+          <div style="font-size:0.7rem; color:var(--admin-gold); text-transform:uppercase; letter-spacing:0.1em;">${escHtml(d.eyebrow || '')}</div>
+          <div style="font-size:0.95rem; font-weight:600; margin:0.2rem 0;">${d.title || 'Section Title'}</div>
+          <hr style="width:40px; margin:0.3rem auto; border-color:var(--admin-gold);">
+          <div style="font-size:0.72rem; color:var(--admin-text-dim);">${escHtml(d.subtitle || '')}</div>
+        </div>`;
+
+      case 'content-block':
+        return `<div>
+          ${d.heading ? `<div style="font-weight:600; margin-bottom:0.25rem;">${escHtml(d.heading)}</div>` : ''}
+          <div style="font-size:0.8rem; color:var(--admin-text-dim);">${escHtml((d.content||'').substring(0,120))}${(d.content||'').length > 120 ? '…' : ''}</div>
+          ${d.list_items && d.list_items.length ? `<div style="font-size:0.72rem; color:var(--admin-text-dim); margin-top:0.3rem;">${d.list_items.length} list items</div>` : ''}
+        </div>`;
+
+      case 'card':
+        return `<div style="padding:0.5rem; background:var(--admin-bg); border-radius:6px;">
+          ${d.icon ? `<div style="font-size:1.2rem;">${d.icon}</div>` : ''}
+          <div style="font-weight:600; font-size:0.85rem;">${escHtml(d.title || '')}</div>
+          <div style="font-size:0.75rem; color:var(--admin-text-dim);">${escHtml((d.description||'').substring(0,80))}</div>
+          ${d.japanese ? `<div style="font-size:0.7rem; color:var(--admin-gold);">${escHtml(d.japanese)}</div>` : ''}
+        </div>`;
+
+      case 'stats':
+        return `<div style="display:flex; gap:1rem; justify-content:center;">
+          ${(d.items||[]).map(it => `<div style="text-align:center;"><div style="font-size:1rem; font-weight:700;">${escHtml(it.number||'')}</div><div style="font-size:0.65rem; color:var(--admin-text-dim);">${escHtml(it.label||'')}</div></div>`).join('')}
+        </div>`;
+
+      case 'two-column':
+        return `<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+          <div style="background:var(--admin-bg); padding:0.5rem; border-radius:4px; font-size:0.75rem; color:var(--admin-text-dim); text-align:center;">
+            ${d.image_url ? '📷 Image' : '🖼 No image'}
+            ${d.image_caption ? `<br><span style="font-size:0.65rem;">"${escHtml(d.image_caption)}"</span>` : ''}
+          </div>
+          <div style="background:var(--admin-bg); padding:0.5rem; border-radius:4px; font-size:0.75rem;">
+            ${d.eyebrow ? `<div style="font-size:0.6rem; color:var(--admin-gold);">${escHtml(d.eyebrow)}</div>` : ''}
+            <div style="font-weight:600;">${escHtml(d.title || '')}</div>
+            <div style="font-size:0.7rem; color:var(--admin-text-dim);">${escHtml((d.content||'').substring(0,60))}</div>
+            ${d.facts && d.facts.length ? `<div style="font-size:0.65rem; color:var(--admin-gold);">${d.facts.length} facts</div>` : ''}
+          </div>
+        </div>`;
+
       case 'heading':
         return `<div class="preview-heading"><${d.level || 'h2'}>${escHtml(d.text || 'Heading')}</${d.level || 'h2'}></div>`;
 
@@ -647,7 +726,7 @@
   }
 
   // ── Edit panel ────────────────────────────────────────────────────────────
-  const typeLabels = { heading:'Heading', text:'Text Block', image:'Image', video:'Video Embed', button:'Button', columns:'Columns', divider:'Divider', spacer:'Spacer', html:'HTML / Embed' };
+  const typeLabels = { 'page-header':'Page Header', 'section-header':'Section Header', 'content-block':'Content Block', card:'Card', heading:'Heading', text:'Text Block', image:'Image', video:'Video Embed', button:'Button', columns:'Columns', stats:'Stats Row', 'two-column':'Two Column Layout', divider:'Divider', spacer:'Spacer', html:'HTML / Embed' };
 
   function openEditPanel(el) {
     const panel = document.getElementById('edit-panel');
@@ -675,6 +754,52 @@
   function buildEditFields(el) {
     const d = el.data;
     switch (el.type) {
+      case 'page-header':
+        return field('text', 'f-eyebrow', 'Eyebrow Label', escAttr(d.eyebrow||'')) +
+          field('text', 'f-title', 'Page Title (HTML allowed)', escAttr(d.title||'')) +
+          textareaField('f-subtitle', 'Subtitle', d.subtitle||'', 60) +
+          field('url', 'f-background', 'Background Image URL', escAttr(d.background_url||'')) +
+          field('text', 'f-ornament', 'Ornament Symbol', escAttr(d.ornament||'◆'));
+
+      case 'section-header':
+        return field('text', 'f-eyebrow', 'Eyebrow Label', escAttr(d.eyebrow||'')) +
+          field('text', 'f-title', 'Section Title (HTML allowed)', escAttr(d.title||'')) +
+          textareaField('f-subtitle', 'Subtitle', d.subtitle||'', 60) +
+          field('text', 'f-ornament', 'Ornament Symbol', escAttr(d.ornament||'◆'));
+
+      case 'content-block':
+        return field('text', 'f-heading', 'Block Heading', escAttr(d.heading||'')) +
+          textareaField('f-content', 'Content Text', d.content||'', 120) +
+          `<div style="font-size:0.72rem; font-weight:600; color:var(--admin-text-dim); margin-top:0.5rem;">List Items (one per line)</div>` +
+          textareaField('f-list-items', '', (d.list_items||[]).join('\n'), 80) +
+          field('text', 'f-bullet', 'Bullet Symbol', escAttr(d.list_bullet||'◆'));
+
+      case 'card':
+        return field('text', 'f-icon', 'Icon (emoji or text)', escAttr(d.icon||'')) +
+          field('text', 'f-title', 'Card Title', escAttr(d.title||'')) +
+          textareaField('f-desc', 'Description', d.description||'', 80) +
+          field('text', 'f-jp', 'Japanese Text (optional)', escAttr(d.japanese||'')) +
+          field('url', 'f-link', 'Link URL (optional)', escAttr(d.link_url||'')) +
+          field('text', 'f-link-text', 'Link Text', escAttr(d.link_text||'Learn More'));
+
+      case 'stats':
+        return buildStatsFields(d);
+
+      case 'two-column':
+        return field('url', 'f-image', 'Image URL', escAttr(d.image_url||'')) +
+          field('text', 'f-image-alt', 'Image Alt Text', escAttr(d.image_alt||'')) +
+          field('text', 'f-image-caption', 'Image Caption', escAttr(d.image_caption||'')) +
+          field('text', 'f-eyebrow', 'Eyebrow', escAttr(d.eyebrow||'')) +
+          field('text', 'f-title', 'Title (HTML allowed)', escAttr(d.title||'')) +
+          `<div class="edit-field"><label><input type="checkbox" id="f-show-divider" ${d.show_divider ? 'checked' : ''} style="accent-color:var(--admin-gold);"> Show gold divider</label></div>` +
+          textareaField('f-content', 'Content Text', d.content||'', 100) +
+          `<div style="font-size:0.72rem; font-weight:600; color:var(--admin-text-dim); margin-top:0.5rem;">Fact Points (one per line)</div>` +
+          textareaField('f-facts', '', (d.facts||[]).join('\n'), 80) +
+          field('text', 'f-btn-text', 'Button Text', escAttr(d.button_text||'Learn More')) +
+          field('url', 'f-btn-url', 'Button URL', escAttr(d.button_url||'')) +
+          selectField('f-btn-style', 'Button Style', ['primary','ghost'], ['Primary (Gold fill)','Ghost (Outline)'], d.button_style||'primary') +
+          `<div class="edit-field"><label><input type="checkbox" id="f-reverse" ${d.reverse ? 'checked' : ''} style="accent-color:var(--admin-gold);"> Reverse layout (image on right)</label></div>`;
+
       case 'heading':
         return field('text', 'f-text', 'Heading Text', escAttr(d.text||'')) +
           selectField('f-level', 'Heading Level', ['h1','h2','h3','h4'], ['H1 — Page Title','H2 — Section','H3 — Sub-section','H4 — Small'], d.level||'h2');
@@ -715,6 +840,19 @@
     }
   }
 
+  function buildStatsFields(d) {
+    const items = Array.isArray(d.items) ? d.items : [];
+    let html = '<div style="font-size:0.72rem; font-weight:600; color:var(--admin-text-dim); margin-bottom:0.5rem;">Statistics (up to 4)</div>';
+    for (let i = 0; i < Math.max(4, items.length); i++) {
+      const item = items[i] || { number: '', label: '' };
+      html += `<div style="display:grid; grid-template-columns:1fr 2fr; gap:0.5rem; margin-bottom:0.5rem; padding:0.5rem; background:var(--admin-bg); border-radius:6px;">
+        <input type="text" id="f-stat-n-${i}" placeholder="Number" value="${escAttr(item.number||'')}" style="padding:0.4rem 0.6rem; background:var(--admin-sidebar); border:1px solid var(--admin-border); border-radius:6px; color:var(--admin-text); font-size:0.8rem;">
+        <input type="text" id="f-stat-l-${i}" placeholder="Label" value="${escAttr(item.label||'')}" style="padding:0.4rem 0.6rem; background:var(--admin-sidebar); border:1px solid var(--admin-border); border-radius:6px; color:var(--admin-text); font-size:0.8rem;">
+      </div>`;
+    }
+    return html;
+  }
+
   function buildColumnItemFields(d) {
     const count = parseInt(d.count) || 2;
     const items = Array.isArray(d.items) ? d.items : Array(count).fill('');
@@ -740,7 +878,58 @@
 
   function readEditFields(el) {
     const g = (id) => { const el = document.getElementById(id); return el ? el.value : undefined; };
+    const chk = (id) => { const el = document.getElementById(id); return el ? el.checked : false; };
     switch (el.type) {
+      case 'page-header':
+        el.data.eyebrow = g('f-eyebrow') || '';
+        el.data.title = g('f-title') || 'Page Title';
+        el.data.subtitle = g('f-subtitle') || '';
+        el.data.background_url = g('f-background') || '';
+        el.data.ornament = g('f-ornament') || '◆';
+        break;
+      case 'section-header':
+        el.data.eyebrow = g('f-eyebrow') || '';
+        el.data.title = g('f-title') || 'Section Title';
+        el.data.subtitle = g('f-subtitle') || '';
+        el.data.ornament = g('f-ornament') || '◆';
+        break;
+      case 'content-block':
+        el.data.heading = g('f-heading') || '';
+        el.data.content = g('f-content') || '';
+        el.data.list_items = (g('f-list-items') || '').split('\n').filter(s => s.trim());
+        el.data.list_bullet = g('f-bullet') || '◆';
+        break;
+      case 'card':
+        el.data.icon = g('f-icon') || '';
+        el.data.title = g('f-title') || '';
+        el.data.description = g('f-desc') || '';
+        el.data.japanese = g('f-jp') || '';
+        el.data.link_url = g('f-link') || '';
+        el.data.link_text = g('f-link-text') || 'Learn More';
+        break;
+      case 'stats': {
+        el.data.items = [];
+        for (let i = 0; i < 4; i++) {
+          const n = g(`f-stat-n-${i}`);
+          const l = g(`f-stat-l-${i}`);
+          if (n || l) el.data.items.push({ number: n || '', label: l || '' });
+        }
+        break;
+      }
+      case 'two-column':
+        el.data.image_url = g('f-image') || '';
+        el.data.image_alt = g('f-image-alt') || '';
+        el.data.image_caption = g('f-image-caption') || '';
+        el.data.eyebrow = g('f-eyebrow') || '';
+        el.data.title = g('f-title') || '';
+        el.data.show_divider = chk('f-show-divider');
+        el.data.content = g('f-content') || '';
+        el.data.facts = (g('f-facts') || '').split('\n').filter(s => s.trim());
+        el.data.button_text = g('f-btn-text') || 'Learn More';
+        el.data.button_url = g('f-btn-url') || '';
+        el.data.button_style = g('f-btn-style') || 'primary';
+        el.data.reverse = chk('f-reverse');
+        break;
       case 'heading':
         el.data.text = g('f-text') || 'Heading';
         el.data.level = g('f-level') || 'h2';

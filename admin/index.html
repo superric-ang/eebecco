@@ -85,7 +85,8 @@
         <h2>Dashboard</h2>
         <div class="breadcrumb"><a href="index.html">Admin</a> / Dashboard</div>
       </div>
-      <button class="btn btn-primary btn-sm" id="seed-btn" onclick="seedProducts()" style="display:none;">🌱 Seed Sample Products</button>
+      <button class="btn btn-primary btn-sm" id="seed-btn" onclick="seedProducts()" style="display:none;">🌱 Seed Products</button>
+      <button class="btn btn-secondary btn-sm" id="seed-pages-btn">📄 Seed Page Content</button>
     </div>
 
     <div id="seed-msg" style="display:none; margin-bottom:1rem; padding:0.8rem 1rem; background:rgba(76,175,125,0.12); border:1px solid var(--admin-success); border-radius:8px; color:var(--admin-success); font-size:0.85rem;"></div>
@@ -297,6 +298,34 @@ window.seedProducts = async function() {
     msg.style.display = 'block';
     setTimeout(() => loadDashboard(), 1000);
   };
+
+  document.getElementById('seed-pages-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('seed-pages-btn');
+    const msg = document.getElementById('seed-msg');
+    if (!confirm('This will create/update pages for Home, Learn, Quality, and Contact with the current design content. Continue?')) return;
+    btn.disabled = true;
+    btn.textContent = 'Seeding...';
+    msg.style.display = 'none';
+
+    const { seedPage } = await import('../js/page-renderer.js');
+    const slugs = ['home', 'learn', 'quality', 'contact'];
+    let success = 0;
+    for (const slug of slugs) {
+      try {
+        const result = await seedPage(slug);
+        if (result) success++;
+      } catch (e) {
+        console.error(`Failed to seed ${slug}:`, e);
+      }
+    }
+    msg.textContent = `✓ ${success}/${slugs.length} pages seeded! You can now edit them in Pages.`;
+    msg.style.display = 'block';
+    msg.style.background = 'rgba(76,175,125,0.12)';
+    msg.style.borderColor = 'var(--admin-success)';
+    msg.style.color = 'var(--admin-success)';
+    btn.disabled = false;
+    btn.textContent = '📄 Seed Page Content';
+  });
 </script>
 </body>
 </html>
