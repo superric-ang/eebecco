@@ -14,6 +14,10 @@ exports.handler = async (event) => {
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+    console.log('SUPABASE_URL set:', !!supabaseUrl);
+    console.log('SERVICE_KEY set:', !!serviceKey);
+    console.log('SERVICE_KEY prefix:', serviceKey ? serviceKey.substring(0, 10) + '...' : 'NONE');
+
     if (!supabaseUrl || !serviceKey) {
       console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
       return { statusCode: 500, body: JSON.stringify({ error: 'Server configuration error.' }) };
@@ -49,14 +53,20 @@ exports.handler = async (event) => {
       req.end();
     });
 
+    console.log('Auth API response status:', result.status);
+    console.log('Auth API response body:', JSON.stringify(result.body).substring(0, 200));
+
     if (result.status >= 400) {
+      const msg = result.body?.msg || result.body?.error || JSON.stringify(result.body);
+      console.error('Supabase Auth API error:', result.status, msg);
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: result.body?.msg || result.body?.error || 'Registration failed.' }),
+        body: JSON.stringify({ error: msg }),
       };
     }
 
     const userId = result.body?.id;
+    console.log('User created with ID:', userId);
     if (userId) {
       await new Promise((resolve) => {
         const pbody = JSON.stringify({ id: userId, full_name: fullName });
