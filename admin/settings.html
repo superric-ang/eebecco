@@ -173,12 +173,41 @@
         <button class="btn btn-secondary" id="reset-btn">Reset to Default</button>
       </div>
     </div>
+
+    <div class="custom-section" style="margin-top:2rem;">
+      <h3>Header / Logo</h3>
+      <p style="font-size:0.82rem; color:var(--admin-text-dim); margin-bottom:1rem;">Customize the site logo that appears in the top navigation bar and footer.</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="edit-field">
+          <label>Logo Image URL</label>
+          <input type="url" id="header-logo-url" placeholder="logo.jpg" style="padding:0.55rem 0.75rem; background:var(--admin-sidebar); border:1px solid var(--admin-border); border-radius:7px; color:var(--admin-text); font-size:0.85rem; width:100%;">
+        </div>
+        <div class="edit-field">
+          <label>Logo Height (px)</label>
+          <div style="display:flex; gap:0.75rem; align-items:center;">
+            <input type="range" id="header-logo-height-range" min="20" max="80" value="36" style="flex:1; accent-color:var(--admin-gold);">
+            <input type="number" id="header-logo-height" min="20" max="80" value="36" style="width:70px; padding:0.55rem; background:var(--admin-sidebar); border:1px solid var(--admin-border); border-radius:7px; color:var(--admin-text); font-size:0.85rem; text-align:center;">
+            <span style="font-size:0.78rem; color:var(--admin-text-dim);">px</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:1rem; padding:1rem; background:var(--admin-bg); border-radius:8px; border:1px dashed var(--admin-border); text-align:center;">
+        <div style="font-size:0.72rem; color:var(--admin-text-dim); margin-bottom:0.5rem;">Preview</div>
+        <div style="background:var(--admin-sidebar); padding:0.75rem 1.5rem; border-radius:6px; display:inline-flex; align-items:center;">
+          <img id="header-logo-preview" src="logo.jpg" alt="Logo preview" style="height:36px; object-fit:contain;">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="save-header-btn">Save Header Settings</button>
+        <button class="btn btn-secondary" id="reset-header-btn">Reset to Default Logo</button>
+      </div>
+    </div>
   </main>
 </div>
 
 <script type="module">
   import supabase from '../js/supabase.js';
-  import { DEFAULT_SCHEME, PRESET_SCHEMES, applyScheme, resetScheme } from '../js/site-settings.js';
+  import { DEFAULT_SCHEME, PRESET_SCHEMES, DEFAULT_HEADER, applyScheme, resetScheme, applyHeaderSettings } from '../js/site-settings.js';
 
   if (!sessionStorage.getItem('admin_uid')) { window.location.href = 'admin-login.html'; }
 
@@ -346,6 +375,76 @@
   });
 
   loadActive();
+
+  /* ── Header Settings ── */
+  const logoUrlInput = document.getElementById('header-logo-url');
+  const logoHeightInput = document.getElementById('header-logo-height');
+  const logoHeightRange = document.getElementById('header-logo-height-range');
+  const logoPreview = document.getElementById('header-logo-preview');
+
+  function updateLogoPreview() {
+    const url = logoUrlInput.value.trim() || 'logo.jpg';
+    const h = parseInt(logoHeightInput.value) || 36;
+    logoPreview.src = url;
+    logoPreview.style.height = h + 'px';
+    logoHeightRange.value = h;
+  }
+
+  logoUrlInput.addEventListener('input', updateLogoPreview);
+  logoHeightInput.addEventListener('input', updateLogoPreview);
+  logoHeightRange.addEventListener('input', () => {
+    logoHeightInput.value = logoHeightRange.value;
+    updateLogoPreview();
+  });
+
+  async function loadHeaderSettingsUI() {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'header_settings')
+      .single();
+
+    const settings = (!error && data) ? { ...DEFAULT_HEADER, ...data.value } : { ...DEFAULT_HEADER };
+    logoUrlInput.value = settings.logo_url || '';
+    logoHeightInput.value = settings.logo_height || 36;
+    updateLogoPreview();
+  }
+
+  document.getElementById('save-header-btn').addEventListener('click', async () => {
+    const msg = document.getElementById('status-msg');
+    const headerData = {
+      logo_url: logoUrlInput.value.trim() || 'logo.jpg',
+      logo_height: parseInt(logoHeightInput.value) || 36,
+    };
+    const { error } = await supabase.from('site_settings').upsert(
+      { key: 'header_settings', value: headerData, updated_at: new Date().toISOString() },
+      { onConflict: 'key' }
+    );
+    if (error) {
+      msg.textContent = 'Error: ' + error.message;
+      msg.className = 'status-msg error';
+    } else {
+      msg.textContent = '✓ Header settings saved! Reload any page to see the new logo.';
+      msg.className = 'status-msg success';
+      sessionStorage.removeItem('eebecco_header');
+      applyHeaderSettings(headerData);
+    }
+    setTimeout(() => { msg.className = 'status-msg'; }, 4000);
+  });
+
+  document.getElementById('reset-header-btn').addEventListener('click', async () => {
+    if (!confirm('Reset logo to the default?')) return;
+    await supabase.from('site_settings').delete().eq('key', 'header_settings');
+    sessionStorage.removeItem('eebecco_header');
+    logoUrlInput.value = DEFAULT_HEADER.logo_url;
+    logoHeightInput.value = DEFAULT_HEADER.logo_height;
+    updateLogoPreview();
+    document.getElementById('status-msg').textContent = '✓ Logo reset to default.';
+    document.getElementById('status-msg').className = 'status-msg success';
+    setTimeout(() => { document.getElementById('status-msg').className = 'status-msg'; }, 4000);
+  });
+
+  loadHeaderSettingsUI();
 </script>
 </body>
 </html>

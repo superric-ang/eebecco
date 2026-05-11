@@ -139,3 +139,36 @@ export function resetScheme() {
   applyScheme({ colors: DEFAULT_SCHEME });
   sessionStorage.removeItem('eebecco_scheme');
 }
+
+export const DEFAULT_HEADER = {
+  logo_url: 'logo.jpg',
+  logo_height: 36,
+};
+
+export async function loadHeaderSettings() {
+  const STORAGE_KEY = 'eebecco_header';
+  const cached = sessionStorage.getItem(STORAGE_KEY);
+  if (cached) {
+    try { return JSON.parse(cached); } catch {}
+  }
+
+  const { data, error } = await supabase
+    .from('site_settings')
+    .select('value')
+    .eq('key', 'header_settings')
+    .single();
+
+  if (error || !data) return { ...DEFAULT_HEADER };
+
+  const settings = { ...DEFAULT_HEADER, ...data.value };
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  return settings;
+}
+
+export function applyHeaderSettings(settings) {
+  const s = settings || DEFAULT_HEADER;
+  document.querySelectorAll('.header-logo img, .footer-brand .header-logo img').forEach(img => {
+    if (s.logo_url) img.src = s.logo_url;
+    if (s.logo_height) img.style.height = s.logo_height + 'px';
+  });
+}
