@@ -74,6 +74,7 @@
         <div class="breadcrumb"><a href="index.html">Admin</a> / Pages</div>
       </div>
       <a href="page-editor.html" class="btn btn-primary btn-sm">+ New Page</a>
+      <button class="btn btn-secondary btn-sm" id="seed-pages-btn">📄 Seed Default Pages</button>
     </div>
 
     <div style="display:flex; gap:0.75rem; margin-bottom:1.5rem; align-items:center;">
@@ -211,6 +212,23 @@ CREATE POLICY "Admins can manage pages" ON pages FOR ALL USING (true);</pre>
     if (status) filtered = filtered.filter(p => p.status === status);
     renderPages(filtered);
   }
+
+  document.getElementById('seed-pages-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('seed-pages-btn');
+    if (!confirm('Create/update pages for Home, Learn, Quality, and Contact with the current design content? Existing content will be overwritten.')) return;
+    btn.disabled = true;
+    btn.textContent = 'Seeding...';
+
+    const { seedPage } = await import('../js/page-renderer.js');
+    const slugs = ['home', 'learn', 'quality', 'contact'];
+    let success = 0;
+    for (const slug of slugs) {
+      try { const r = await seedPage(slug); if (r) success++; } catch (e) { console.error(slug, e); }
+    }
+    btn.disabled = false;
+    btn.textContent = '📄 Seed Default Pages';
+    if (success > 0) loadPages();
+  });
 
   loadPages();
 </script>
