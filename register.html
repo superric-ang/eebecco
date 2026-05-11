@@ -233,7 +233,6 @@
     };
   </script>
   <script type="module">
-    import supabase from './js/supabase.js';
     import { register } from './js/auth.js';
 
     const form = document.getElementById('register-form');
@@ -301,25 +300,22 @@
       submitBtn.classList.add('btn-loading');
 
       try {
-        const { data, error } = await register(email, password, fullName);
+        const response = await fetch('/.netlify/functions/register-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, fullName }),
+        });
 
-        if (error) {
-          showError(error.message);
+        const result = await response.json();
+
+        if (result.error) {
+          showError(result.error);
           submitBtn.textContent = 'Create Account';
           submitBtn.classList.remove('btn-loading');
           return;
         }
 
-        if (data?.user?.id) {
-          try {
-            await supabase.from('profiles').upsert(
-              { id: data.user.id, full_name: fullName },
-              { onConflict: 'id' }
-            );
-          } catch {}
-        }
-
-        successMsg.innerHTML = 'Account created!<br><br>If email confirmation is enabled, please check your inbox to confirm your email. Otherwise, you can sign in now.';
+        successMsg.innerHTML = 'Account created! You can now sign in.';
         successMsg.classList.add('visible');
         submitBtn.textContent = 'Account created ✓';
         submitBtn.classList.remove('btn-loading');
@@ -328,7 +324,7 @@
 
         setTimeout(() => {
           window.location.href = 'login.html';
-        }, 3500);
+        }, 2000);
 
       } catch (err) {
         showError('Something went wrong. Please try again.');
